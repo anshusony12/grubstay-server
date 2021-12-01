@@ -1,6 +1,7 @@
 package com.grubstay.server.services.impl;
 
 import com.grubstay.server.entities.User;
+import com.grubstay.server.entities.UserIdProof;
 import com.grubstay.server.entities.UserRoles;
 import com.grubstay.server.helper.UserFoundException;
 import com.grubstay.server.repos.RoleRepository;
@@ -45,5 +46,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         this.userRepository.deleteById(userId);
+    }
+
+    @Override
+    public boolean updateUserIdProof(long userId, UserIdProof userIdProof) {
+        User user = this.userRepository.getById(userId);
+        user.setUserIdProof(userIdProof);
+        this.userRepository.save(user);
+        return true;
     }
 }
