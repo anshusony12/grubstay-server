@@ -7,6 +7,7 @@ import com.grubstay.server.repos.RoleRepository;
 import com.grubstay.server.repos.UserRepository;
 import com.grubstay.server.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;

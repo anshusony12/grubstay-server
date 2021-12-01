@@ -22,6 +22,7 @@ public class User {
     private long phoneNo;
     private String password;
     private String profilePic;
+    private boolean enabled = true;
 
     // user has many roles
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
