@@ -16,9 +16,11 @@ public class Location {
 
     private String locationName;
 
+    // Many Location can be available in one city
     @ManyToOne(fetch = FetchType.EAGER)
     private City city;
 
+    // One location can have multiple sub-locations
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "location")
     private List<SubLocation> subLocationList=new ArrayList<>();
 }

@@ -18,6 +18,7 @@ public class City {
     private String cityName;
     private String cityIcon;
 
+    // One City can have many locations
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "city")
     private List<Location> locationList=new ArrayList<>();
 }

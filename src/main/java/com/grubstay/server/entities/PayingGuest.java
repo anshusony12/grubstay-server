@@ -1,6 +1,8 @@
 package com.grubstay.server.entities;
 
+import com.grubstay.server.helper.PGIdGenerator;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,8 +13,10 @@ import java.util.List;
 public class PayingGuest {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long pgId;
+    @GenericGenerator(name = "pg_id", strategy = "com.grubstay.server.helper.PGIdGenerator")
+    @GeneratedValue(generator = "pg_id")
+    @Column(name="pg_id")
+    private String pgId;
 
     private String pgName;
     private String pgDesc;
@@ -30,15 +34,19 @@ public class PayingGuest {
 
     private double distFromSubLoc;
 
+    //Many PayingGuest can be available in single location
     @ManyToOne(fetch = FetchType.EAGER)
     private SubLocation subLocation;
 
+    //One PayingGuest Room can have a single set of Amenties and Services
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "pgStayId")
     private PGAmenitiesServices amenitiesServices;
 
+    //One Paying Guest Room can ave a single set of Room Facitliyt
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "pgStayId")
     private PGRoomFacility roomFacility;
 
+    //Many LandMarks can be available nearer to one PayingGuest
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "pgStayId")
     private List<LandMarks> landMarksList=new ArrayList<>();
 }

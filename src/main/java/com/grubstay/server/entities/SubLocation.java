@@ -16,9 +16,11 @@ public class SubLocation {
 
     private String subLocationName;
 
+    // Many Sub-Location can be belongs to One Location
     @ManyToOne(fetch = FetchType.EAGER)
     private Location location;
 
+    // One Location can have multiple PayingGuest
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "subLocation")
     private List<PayingGuest> payingGuestList=new ArrayList<>();
 

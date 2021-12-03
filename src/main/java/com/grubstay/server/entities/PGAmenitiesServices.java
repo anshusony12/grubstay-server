@@ -23,6 +23,7 @@ public class PGAmenitiesServices {
     private boolean parkingArea;
     private boolean waterFilter;
 
+    // One set of Amentities and Service is belongs to one Paying Guest
     @OneToOne(fetch = FetchType.EAGER)
     private PayingGuest pgStayId;
 }
