@@ -7,6 +7,8 @@ import com.grubstay.server.services.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CityServiceImpl implements CityService {
 
@@ -47,11 +49,17 @@ public class CityServiceImpl implements CityService {
         if(existingCity==null){
             throw new HelperException("City not present!");
         }else {
-            int updatedRows=cityRepository.updateCityByCityId(city.getCityName(), city.getCityIcon(), city.getCityId());
+            int updatedRows=cityRepository.updateCityByCityId(city.getCityName(), city.getCityImage(), city.getCityId());
             if(updatedRows>0){
                 existingCity=cityRepository.findCityByCityId(city.getCityId());
             }
         }
         return existingCity;
+    }
+
+    @Override
+    public List<City> getAllCity() throws HelperException {
+        List<City> list=cityRepository.findAll();
+        return list;
     }
 }
