@@ -1,6 +1,7 @@
 package com.grubstay.server.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.grubstay.server.entities.compository.CityId;
 import lombok.Data;
 
 
@@ -9,13 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 @Data
 @Entity
+@IdClass(CityId.class)
 public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int cityId;
 
+    @Id
+    @Column(unique = true)
     private String cityName;
+
     private String cityImage;
 
     private boolean status;

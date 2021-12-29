@@ -4,6 +4,7 @@ import com.grubstay.server.entities.LandMarks;
 import com.grubstay.server.entities.PGAmenitiesServices;
 import com.grubstay.server.entities.PGRoomFacility;
 import com.grubstay.server.entities.PayingGuest;
+import com.grubstay.server.services.StorageService;
 import com.grubstay.server.services.impl.PGServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -18,6 +19,9 @@ public class GrubstayApplication implements CommandLineRunner {
 
 	@Autowired
 	private PGServiceImpl pgService;
+
+	@Autowired
+	private StorageService _storageService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(GrubstayApplication.class, args);
