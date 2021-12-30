@@ -12,6 +12,6 @@ public interface CityRepository extends JpaRepository<City, Integer> {
 
     @Modifying
     @Transactional
-    @Query("update City c set c.cityName = ?1, c.cityImage = ?2 where c.cityId = ?3")
-    public int updateCityByCityId(String cityName, String cityIcon, Integer cityId);
+    @Query("update City c set c.cityName = ?1, c.cityImageName = ?2, c.status=?3 where c.cityId = ?4")
+    public int updateCityByCityId(String cityName, String cityIcon, boolean status, Integer cityId);
 }

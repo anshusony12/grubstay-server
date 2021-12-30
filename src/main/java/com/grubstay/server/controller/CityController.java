@@ -1,6 +1,7 @@
 package com.grubstay.server.controller;
 
 import com.grubstay.server.entities.City;
+import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.ResultData;
 import com.grubstay.server.services.CityService;
 import com.grubstay.server.services.StorageService;
@@ -48,6 +49,10 @@ public class CityController {
                 this._cityService.createCity(city);
                 resultData.success = "saved";
             }
+            else{
+                this._cityService.createCity(city);
+                resultData.success = "saved";
+            }
         }
         catch(Exception e){
             resultData.error=e.getMessage();
@@ -61,9 +66,19 @@ public class CityController {
         ResultData resultData=new ResultData();
         try{
             List<City> cityData=_cityService.getAllCity();
+            List<String> imageList=new ArrayList<>();
+            String imageSrc="";
             for (City city : cityData) {
-                Resource cityFile = this._storageService.getCityFile(city.getCityImage());
-                city.setCityImage(cityFile.getURL().toString());
+                String cityRootPath = this._storageService.getCityRootPath();
+                File file = new File(cityRootPath, city.getCityImageName());
+                File defaultCity = new File(cityRootPath, "defaultcity.jpeg");
+                if(file.exists()){
+                    imageSrc = this._storageService.getImageSrc(file);
+                }else{
+                    imageSrc = this._storageService.getImageSrc(defaultCity);
+                }
+                //Resource cityFile = this._storageService.getCityFile(city.getCityImage());
+                city.setCityImage(imageSrc);
             }
             resultData.data=(ArrayList)cityData;
             resultData.total=cityData.size();
@@ -73,6 +88,64 @@ public class CityController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{cityId}")
+    public ResponseEntity deleteCity(@PathVariable int cityId) throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+//            Integer cityId=Integer.parseInt(city_id);
+            City city = _cityService.getCity(cityId);
+            if(city!=null){
+                this._cityService.deleteCity(cityId);
+                new File(_storageService.getCityRootPath(),city.getCityImage()).delete();
+            }
+            resultData.success = "deleted";
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @PutMapping("/updateCityWithoutImage")
+    public ResponseEntity updateCityWithoutImage(@ModelAttribute("city") City city){
+        ResultData result=new ResultData();
+        try{
+            City cityData=this._cityService.getCity(city.getCityId());
+            if(cityData!=null){
+                this._cityService.updateCity(city);
+                result.success="success";
+            }
+            else{
+                throw new HelperException("City Not Present");
+            }
+        }
+        catch(Exception e){
+            result.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    @PutMapping("/updateCityWithImage")
+    public ResponseEntity updateCityWithImage(@ModelAttribute("city") City city){
+        ResultData result=new ResultData();
+        try{
+            City cityData=this._cityService.getCity(city.getCityId());
+            if(cityData!=null){
+                this._cityService.updateCity(city);
+                result.success="success";
+            }
+            else{
+                throw new HelperException("City Not Present");
+            }
+        }
+        catch(Exception e){
+            result.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /*@GetMapping(

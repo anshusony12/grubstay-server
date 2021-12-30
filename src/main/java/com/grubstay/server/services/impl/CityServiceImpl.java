@@ -49,7 +49,7 @@ public class CityServiceImpl implements CityService {
         if(existingCity==null){
             throw new HelperException("City not present!");
         }else {
-            int updatedRows=cityRepository.updateCityByCityId(city.getCityName(), city.getCityImage(), city.getCityId());
+            int updatedRows=cityRepository.updateCityByCityId(city.getCityName(), city.getCityImageName(), city.isStatus(), city.getCityId());
             if(updatedRows>0){
                 existingCity=cityRepository.findCityByCityId(city.getCityId());
             }
