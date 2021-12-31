@@ -40,11 +40,6 @@ public class CityController {
         ResultData resultData=new ResultData();
         try{
             if(!file.isEmpty()){
-                /*System.out.println(ResourceUtils.getFile("src/main/resources/static/image/city"));
-                ClassLoader classLoader = getClass().getClassLoader();
-                File savePath = ResourceUtils.getFile("src/main/resources/static/image/city");
-                Path path = Paths.get(savePath.getAbsolutePath() + File.separator + file.getOriginalFilename());
-                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);*/
                 this._storageService.storeCity(file);
                 this._cityService.createCity(city);
                 resultData.success = "saved";
@@ -55,7 +50,7 @@ public class CityController {
             }
         }
         catch(Exception e){
-            resultData.error=e.getMessage();
+            resultData.error=e.toString();
             e.printStackTrace();
         }
         return new ResponseEntity<>(resultData, HttpStatus.OK);
@@ -98,7 +93,7 @@ public class CityController {
             City city = _cityService.getCity(cityId);
             if(city!=null){
                 this._cityService.deleteCity(cityId);
-                new File(_storageService.getCityRootPath(),city.getCityImage()).delete();
+                new File(_storageService.getCityRootPath(),city.getCityImageName()).delete();
             }
             resultData.success = "deleted";
         }
@@ -129,11 +124,16 @@ public class CityController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @PutMapping("/updateCityWithImage")
-    public ResponseEntity updateCityWithImage(@ModelAttribute("city") City city){
+    public ResponseEntity updateCityWithImage(@ModelAttribute("city") City city, @RequestParam("image") MultipartFile file){
         ResultData result=new ResultData();
         try{
             City cityData=this._cityService.getCity(city.getCityId());
             if(cityData!=null){
+                File existingFile=new File(this._storageService.getCityRootPath(), cityData.getCityImageName());
+                if(existingFile.exists()){
+                    existingFile.delete();
+                }
+                this._storageService.storeCity(file);
                 this._cityService.updateCity(city);
                 result.success="success";
             }

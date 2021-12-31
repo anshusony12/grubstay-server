@@ -14,7 +14,10 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long locationId;
 
+    @Column(unique = true)
     private String locationName;
+
+    private boolean status;
 
     // Many Location can be available in one city
     @ManyToOne(fetch = FetchType.EAGER)
