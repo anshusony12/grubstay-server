@@ -14,7 +14,6 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long locationId;
 
-    @Column(unique = true)
     private String locationName;
 
     private boolean status;

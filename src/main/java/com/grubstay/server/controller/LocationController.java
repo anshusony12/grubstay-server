@@ -2,6 +2,7 @@ package com.grubstay.server.controller;
 
 import com.grubstay.server.entities.City;
 import com.grubstay.server.entities.Location;
+import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.ResultData;
 import com.grubstay.server.services.CityService;
 import com.grubstay.server.services.LocationService;
@@ -50,8 +51,21 @@ public class LocationController {
         try{
             City city=this._cityService.getCity(cityId);
             location.setCity(city);
-            this._locationService.addLocation(location);
-            resultData.success="saved";
+            String locationName=location.getLocationName();
+            Integer cityID=location.getCity().getCityId();
+            if(cityID!=0 && locationName!=""){
+                boolean alreadyAddStatus=this._locationService.locationUsingCityAndLocationName(locationName, cityID);
+                if(alreadyAddStatus==true){
+                    this._locationService.addLocation(location);
+                    resultData.success="saved";
+                }
+                else{
+                    resultData.success="failed";
+                }
+            }
+            else{
+                throw new HelperException("Something went wrong!");
+            }
         }
         catch(Exception e){
             resultData.error=e.getMessage();
@@ -67,8 +81,9 @@ public class LocationController {
         Long locationId=0l;
         try{
             locationId=location.getLocationId();
+            status=location.isStatus();
             if(locationId!=0) {
-                Location updatedLocation = this._locationService.updateCityByCityId(status,locationId);
+                Location updatedLocation = this._locationService.updateLocationByLocationId(status,locationId);
                 if(updatedLocation!=null){
                     ArrayList updateLocation=new ArrayList();
                     updateLocation.add(location);
@@ -85,5 +100,30 @@ public class LocationController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{locationId}")
+    public ResponseEntity deleteLocation(@PathVariable("locationId") int locationId){
+        ResultData resutlData=new ResultData();
+        long locationID=0;
+        try{
+            if(locationId!=0) {
+                locationID=locationId;
+                boolean deleteStatus = this._locationService.deleteLocation(locationID);
+                if(deleteStatus){
+                    resutlData.success="Deleted";
+                }
+                else{
+                    resutlData.success="Failed";
+                }
+            }else{
+                throw new HelperException("Location Id not found!");
+            }
+        }
+        catch(Exception e){
+            resutlData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resutlData, HttpStatus.OK);
     }
 }

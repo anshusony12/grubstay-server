@@ -1,5 +1,6 @@
 package com.grubstay.server.services.impl;
 
+import com.grubstay.server.entities.City;
 import com.grubstay.server.entities.Location;
 import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.repos.LocationRepository;
@@ -41,7 +42,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Location updateCityByCityId(boolean status, Long locationId) throws Exception{
+    public Location updateLocationByLocationId(boolean status, Long locationId) throws Exception{
         Location location=null;
         try{
             location=this.locationRepository.findLocationByLocationId(locationId);
@@ -59,5 +60,41 @@ public class LocationServiceImpl implements LocationService {
             throw e;
         }
         return location;
+    }
+
+    @Override
+    public boolean deleteLocation(Long locationId) throws Exception {
+        try{
+            Location location=this.locationRepository.findLocationByLocationId(locationId);
+            if(location==null){
+                throw new HelperException("City Not Present!");
+            }else{
+                this.locationRepository.deleteById(locationId);
+                Location deleteLocation=this.locationRepository.findLocationByLocationId(locationId);
+                if(deleteLocation==null){
+                    return true;
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean locationUsingCityAndLocationName(String locationName, Integer cityId) throws Exception {
+        try{
+            Location location=this.locationRepository.locationUsingCityAndLocationName(locationName,cityId);
+            if(location==null){
+                return true;
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();;
+            throw e;
+        }
+        return false;
     }
 }
