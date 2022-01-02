@@ -1,5 +1,6 @@
 package com.grubstay.server.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -24,5 +25,6 @@ public class Location {
 
     // One location can have multiple sub-locations
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "location")
+    @JsonIgnore
     private List<SubLocation> subLocationList=new ArrayList<>();
 }

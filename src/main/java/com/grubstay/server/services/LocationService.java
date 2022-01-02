@@ -12,5 +12,6 @@ public interface LocationService{
     void addLocation(Location location) throws Exception;
     Location updateLocationByLocationId(boolean status, Long locationId) throws Exception;
     boolean deleteLocation(Long locationId) throws Exception;
-    boolean locationUsingCityAndLocationName(String locationName, Integer cityId) throws Exception;
+    Location locationUsingCityAndLocationName(String locationName, Integer cityId) throws Exception;
+    Location findLocationByLocationId(Long locationId) throws Exception;
 }

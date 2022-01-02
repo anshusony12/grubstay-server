@@ -54,8 +54,8 @@ public class LocationController {
             String locationName=location.getLocationName();
             Integer cityID=location.getCity().getCityId();
             if(cityID!=0 && locationName!=""){
-                boolean alreadyAddStatus=this._locationService.locationUsingCityAndLocationName(locationName, cityID);
-                if(alreadyAddStatus==true){
+                Location existingLocation=this._locationService.locationUsingCityAndLocationName(locationName, cityID);
+                if(existingLocation==null){
                     this._locationService.addLocation(location);
                     resultData.success="saved";
                 }

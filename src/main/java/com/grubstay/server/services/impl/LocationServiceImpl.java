@@ -84,17 +84,35 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public boolean locationUsingCityAndLocationName(String locationName, Integer cityId) throws Exception {
+    public Location locationUsingCityAndLocationName(String locationName, Integer cityId) throws Exception {
+        Location location=null;
         try{
-            Location location=this.locationRepository.locationUsingCityAndLocationName(locationName,cityId);
-            if(location==null){
-                return true;
+            Location existingLocation=this.locationRepository.locationUsingCityAndLocationName(locationName,cityId);
+            if(existingLocation!=null){
+                location=existingLocation;
             }
         }
         catch(Exception e){
             e.printStackTrace();;
             throw e;
         }
-        return false;
+        return location;
     }
+
+    @Override
+    public Location findLocationByLocationId(Long locationId) {
+        Location location=null;
+        try{
+            location=this.locationRepository.findLocationByLocationId(locationId);
+            if(location!=null){
+                return location;
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+        return location;
+    }
+
 }
