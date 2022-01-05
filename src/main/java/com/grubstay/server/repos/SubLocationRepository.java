@@ -4,9 +4,10 @@ import com.grubstay.server.entities.SubLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-
+@Repository
 public interface SubLocationRepository extends JpaRepository<SubLocation, Long> {
     public SubLocation findSubLocationBySubLocationId(Long subLocationId);
 

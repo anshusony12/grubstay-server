@@ -44,6 +44,18 @@ public class StorageService {
         }
     }
 
+    public void storePg(MultipartFile file) throws Exception{
+        try{
+            File savePath = ResourceUtils.getFile(this.rootLocation+pgPath);
+            Path path = Paths.get(savePath.getAbsolutePath() + File.separator + file.getOriginalFilename());
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
     public List<String> loadAllCityImage() throws Exception{
         List<String> imageList=new ArrayList<>();
         String cityImagePath=this.rootLocation+this.cityPath;

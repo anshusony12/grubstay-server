@@ -15,16 +15,32 @@ public class PGServiceImpl implements PGService {
     @Autowired
     PGRepository pgRepository;
 
-    public PayingGuest createPG(PayingGuest pg, PGAmenitiesServices amenitiesServices, PGRoomFacility roomFacility, List<LandMarks> landMarks) throws PGFoundException {
+    public PayingGuest createPG(PayingGuest pg) throws PGFoundException {
         PayingGuest existingPG=pgRepository.findPayingGuestByPgId(pg.getPgId());
+        PayingGuest savedPg = null;
         if(existingPG!=null){
             throw new PGFoundException();
         }else{
-            pg.setAmenitiesServices(amenitiesServices);
-            pg.setRoomFacility(roomFacility);
-            pg.setLandMarksList(landMarks);
-            pgRepository.save(pg);
+            savedPg = pgRepository.save(pg);
         }
-        return null;
+        return savedPg;
     }
+
+    @Override
+    public PayingGuest findPGByNameAndSubLocation(String name, Long sLId) {
+        PayingGuest pg = null;
+        try {
+            pg = this.pgRepository.findPGByNameAndSubLocation(name, sLId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return pg;
+    }
+
+    @Override
+    public List<PayingGuest> loadAllPGData() {
+        List<PayingGuest> pgList = this.pgRepository.findAll();
+        return pgList;
+    }
+
 }

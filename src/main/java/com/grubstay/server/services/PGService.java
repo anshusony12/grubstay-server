@@ -9,5 +9,7 @@ import com.grubstay.server.helper.PGFoundException;
 import java.util.List;
 
 public interface PGService {
-    public PayingGuest createPG(PayingGuest pg, PGAmenitiesServices amenitiesServices, PGRoomFacility roomFacility, List<LandMarks> landMarks) throws PGFoundException;
+    public PayingGuest createPG(PayingGuest pg) throws PGFoundException;
+    public PayingGuest findPGByNameAndSubLocation(String name, Long sLId);
+    public List<PayingGuest> loadAllPGData();
 }

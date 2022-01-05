@@ -1,5 +1,6 @@
 package com.grubstay.server.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -25,5 +26,6 @@ public class PGAmenitiesServices {
 
     // One set of Amentities and Service is belongs to one Paying Guest
     @OneToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     private PayingGuest pgStayId;
 }

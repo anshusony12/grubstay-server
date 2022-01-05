@@ -1,5 +1,6 @@
 package com.grubstay.server.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.grubstay.server.helper.PGIdGenerator;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
@@ -21,16 +22,18 @@ public class PayingGuest {
     private String pgName;
     private String pgDesc;
     private String pgAddress;
-    private String pgType;
-    private boolean pgForMale;
-    private boolean pgForFemale;
-    private boolean pgForBoth;
-
-    private String pgImage;
+    private String pgGender;
+    private boolean weekly;
+    private boolean monthly;
+    private boolean daily;
 
     private int singleMemPgPrc;
     private int doubleMemPgPrc;
     private int tripleMemPgPrc;
+
+    private boolean status;
+
+
 
     private double distFromSubLoc;
 
@@ -48,6 +51,8 @@ public class PayingGuest {
 
     //Many LandMarks can be available nearer to one PayingGuest
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "pgStayId")
+    @JsonIgnore
     private List<LandMarks> landMarksList=new ArrayList<>();
+
 }
 
