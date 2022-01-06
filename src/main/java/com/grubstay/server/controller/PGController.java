@@ -109,16 +109,18 @@ public class PGController {
         try{
             PGAmenitiesServices pgAmen = new ObjectMapper().readValue(amens, PGAmenitiesServices.class);
             PGRoomFacility pgRoomFacs = new ObjectMapper().readValue(roomFacs, PGRoomFacility.class);
-            //System.out.println(pg);
             PayingGuest existPg = this.pgRepository.findPayingGuestByPgId(pg.getPgId());
-            existPg.setRoomFacility(pgRoomFacs);
-            existPg.setAmenitiesServices(pgAmen);
+            existPg=pg;
             existPg.setSubLocation(this.subLocationRepository.findSubLocationBySubLocationId(Long.parseLong(subLocationId)));
-            PayingGuest save = this.pgRepository.save(existPg);
-            if(save!=null) {
+            PayingGuest updatedPG = this.pgRepository.save(existPg);
+            if(updatedPG!=null) {
+                pgAmen.setPgStayId(updatedPG);
+                pgRoomFacs.setPgStayId(updatedPG);
+                this.pgAmenitiesServiceRepository.save(pgAmen);
+                this.pgFacilityRepository.save(pgRoomFacs);
                 if(pgImages.length > 0){
-                    List<StayGallery> stayGalleries = this.stayGalleryRepository.getStayGalleryByPgId(save.getPgId());
-                    this.stayGalleryRepository.deletByStayId(save.getPgId());
+                    List<StayGallery> stayGalleries = this.stayGalleryRepository.getStayGalleryByPgId(updatedPG.getPgId());
+                    this.stayGalleryRepository.deletByStayId(updatedPG.getPgId());
                     for(StayGallery stay : stayGalleries){
                         String fileName = stay.getGalName();
                         new File(this.storageService.getPgRootPath(),fileName).delete();
@@ -127,7 +129,7 @@ public class PGController {
                         if(!file.isEmpty()){
                             StayGallery stayGallery = new StayGallery();
                             stayGallery.setGalName(file.getOriginalFilename());
-                            stayGallery.setStayId(save.getPgId());
+                            stayGallery.setStayId(updatedPG.getPgId());
                             StayGallery savedStayGallery = this.stayGalleryRepository.save(stayGallery);
                             if(savedStayGallery!=null){
                                 this.storageService.storePg(file);
@@ -135,6 +137,7 @@ public class PGController {
                         }
                     }
                 }
+                resultData.success="success";
             }
 
         }

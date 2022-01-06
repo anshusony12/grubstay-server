@@ -6,11 +6,14 @@ import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.ResultData;
 import com.grubstay.server.services.CityService;
 import com.grubstay.server.services.LocationService;
+import com.grubstay.server.services.StorageService;
+import com.sun.org.apache.xml.internal.security.keys.storage.StorageResolverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +28,21 @@ public class LocationController {
     @Autowired
     private CityService _cityService;
 
+    @Autowired
+    private StorageService _storageService;
+
     @GetMapping("/")
     public ResponseEntity loadAllLocation(){
         ResultData resultData=new ResultData();
         try{
             List<Location> locations=this._locationService.loadAllLocation();
-
+            for(Location l: locations){
+                City city=l.getCity();
+                File file=new File(this._storageService.getCityRootPath(), city.getCityImageName());
+                String imageSrc=this._storageService.getImageSrc(file);
+                city.setCityImage(imageSrc);
+                l.setCity(city);
+            }
             ArrayList allLocations=new ArrayList();
             allLocations.add(locations);
 
