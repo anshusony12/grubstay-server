@@ -30,7 +30,7 @@ public class StorageService {
     private final String rootLocation= Paths.get(localWorkingPath+"static/image/").toString();
     private final String cityPath="/city";
     private final String pgPath="/pg";
-
+    private final String landMarkPath="/landmark";
 
     public void storeCity(MultipartFile file) throws Exception{
         try{
@@ -47,6 +47,17 @@ public class StorageService {
     public void storePg(MultipartFile file) throws Exception{
         try{
             File savePath = ResourceUtils.getFile(this.rootLocation+pgPath);
+            Path path = Paths.get(savePath.getAbsolutePath() + File.separator + file.getOriginalFilename());
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    public void storeLandMark(MultipartFile file) throws Exception{
+        try{
+            File savePath = ResourceUtils.getFile(this.rootLocation+landMarkPath);
             Path path = Paths.get(savePath.getAbsolutePath() + File.separator + file.getOriginalFilename());
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         }
@@ -107,6 +118,10 @@ public class StorageService {
     public String getPgRootPath(){
         String pgImagesPath=this.rootLocation+this.pgPath;
         return pgImagesPath;
+    }
+    public String getLandMarkPath(){
+        String landMarkImagePath=this.rootLocation+this.landMarkPath;
+        return landMarkImagePath;
     }
 
     public Resource getCityFile(String filename) throws Exception{

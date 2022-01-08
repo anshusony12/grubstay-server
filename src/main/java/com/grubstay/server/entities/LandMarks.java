@@ -14,6 +14,8 @@ public class LandMarks {
 
     private String landMarkName;
 
+    private String landMarkImageName;
+
     private String landMarkImage;
 
     //Many Landmarks can be available in nearby location to Single Paying Guest
