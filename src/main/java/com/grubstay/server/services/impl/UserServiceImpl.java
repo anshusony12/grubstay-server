@@ -6,6 +6,7 @@ import com.grubstay.server.entities.UserRoles;
 import com.grubstay.server.helper.UserFoundException;
 import com.grubstay.server.repos.RoleRepository;
 import com.grubstay.server.repos.UserRepository;
+import com.grubstay.server.repos.UserRoleRepository;
 import com.grubstay.server.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,8 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private UserRoleRepository userRoleRepository;
 
     @Override
     public User createUser(User user, Set<UserRoles> userRoles) throws Exception {
@@ -33,8 +36,13 @@ public class UserServiceImpl implements UserService {
             for(UserRoles ur: userRoles){
                 roleRepository.save(ur.getRole());
             }
-            user.getUserRoles().addAll(userRoles);
             local = this.userRepository.save(user);
+            if(local!=null){
+                for(UserRoles u : userRoles){
+                    u.setUser(local);
+                    this.userRoleRepository.save(u);
+                }
+            }
         }
         return local;
     }

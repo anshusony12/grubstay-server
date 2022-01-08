@@ -18,4 +18,5 @@ public interface StayGalleryRepository extends JpaRepository<StayGallery,Long> {
     @Modifying
     @Transactional
     public void deletByStayId(String pgId);
+
 }

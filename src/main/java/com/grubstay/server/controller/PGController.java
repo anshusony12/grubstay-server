@@ -114,11 +114,17 @@ public class PGController {
             existPg.setSubLocation(this.subLocationRepository.findSubLocationBySubLocationId(Long.parseLong(subLocationId)));
             PayingGuest updatedPG = this.pgRepository.save(existPg);
             if(updatedPG!=null) {
+                PGAmenitiesServices oldAmen = this.pgAmenitiesServiceRepository.findPGAmenitiesServicesByPgStayId(updatedPG.getPgId());
+                PGRoomFacility oldRoom = this.pgFacilityRepository.findPGRoomFacilityByPgStayId(updatedPG.getPgId());
+                pgAmen.setAmsId(oldAmen.getAmsId());
+                pgRoomFacs.setRmfId(oldRoom.getRmfId());
                 pgAmen.setPgStayId(updatedPG);
                 pgRoomFacs.setPgStayId(updatedPG);
-                this.pgAmenitiesServiceRepository.save(pgAmen);
-                this.pgFacilityRepository.save(pgRoomFacs);
-                if(pgImages.length > 0){
+                oldAmen = pgAmen;
+                oldRoom = pgRoomFacs;
+                this.pgAmenitiesServiceRepository.save(oldAmen);
+                this.pgFacilityRepository.save(oldRoom);
+                if(pgImages.length > 0 && !pgImages[0].getOriginalFilename().equals("noImage")){
                     List<StayGallery> stayGalleries = this.stayGalleryRepository.getStayGalleryByPgId(updatedPG.getPgId());
                     this.stayGalleryRepository.deletByStayId(updatedPG.getPgId());
                     for(StayGallery stay : stayGalleries){
@@ -155,6 +161,31 @@ public class PGController {
             List<PayingGuest> payingGuests = this._pgService.loadAllPGData();
             resultData.data=(ArrayList)payingGuests;
             resultData.total=payingGuests.size();
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{pgId}")
+    public ResponseEntity deletePgData(@PathVariable("pgId") String pgId) throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+            PayingGuest pg = this.pgRepository.findPayingGuestByPgId(pgId);
+            PGAmenitiesServices pgAmen = this.pgAmenitiesServiceRepository.findPGAmenitiesServicesByPgStayId(pgId);
+            PGRoomFacility pgRoom = this.pgFacilityRepository.findPGRoomFacilityByPgStayId(pgId);
+            List<StayGallery> stays = this.stayGalleryRepository.getStayGalleryByPgId(pgId);
+            this.pgAmenitiesServiceRepository.deleteAmenServiceById(pgAmen.getAmsId());
+            this.pgFacilityRepository.deleteRoomFacilityById(pgRoom.getRmfId());
+            this.stayGalleryRepository.deletByStayId(pgId);
+            this.pgRepository.deletePgById(pgId);
+            for(StayGallery s : stays){
+                String fileName = s.getGalName();
+                new File(this.storageService.getPgRootPath(),fileName).delete();
+            }
+            resultData.success = "deleted";
         }
         catch(Exception e){
             resultData.error=e.getMessage();

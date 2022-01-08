@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,17 +20,18 @@ public class User {
     private String firstName;
     private String lastName;
     private String gender;
-    private long phoneNo;
+    private long phone;
+    private long whatsapp;
     private String password;
-    private String profilePic;
+    private Date dob;
     private boolean enabled = true;
 
     // user has many roles
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
     @JsonIgnore
     private Set<UserRoles> userRoles = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
     private UserIdProof userIdProof;
 
 }
