@@ -1,11 +1,8 @@
 package com.grubstay.server.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 
 import javax.persistence.*;
 
-@Data
 @Entity
 public class UserRoles {
     @Id
@@ -13,16 +10,41 @@ public class UserRoles {
     private long userRoleId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnore
     private User user;
 
     @ManyToOne
     private Role role;
 
-    @Override
-    public String toString() {
-        return "UserRoles{" +
-                "userRoleId=" + userRoleId +
-                '}';
+    public long getUserRoleId() {
+        return userRoleId;
+    }
+
+    public void setUserRoleId(long userRoleId) {
+        this.userRoleId = userRoleId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public UserRoles() {
+    }
+
+    public UserRoles(long userRoleId, User user, Role role) {
+        this.userRoleId = userRoleId;
+        this.user = user;
+        this.role = role;
     }
 }
