@@ -3,7 +3,9 @@ package com.grubstay.server.controller;
 import com.grubstay.server.entities.City;
 import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.ResultData;
+import com.grubstay.server.repos.CityRepository;
 import com.grubstay.server.services.CityService;
+import com.grubstay.server.services.LocationService;
 import com.grubstay.server.services.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -34,6 +36,12 @@ public class CityController {
 
     @Autowired
     public StorageService _storageService;
+
+    @Autowired
+    public LocationService _locationService;
+
+    @Autowired
+    public CityRepository cityRepository;
 
     @PostMapping(path="/")
     public ResponseEntity addCity(@ModelAttribute("city") City city, @RequestParam("image") MultipartFile file) throws Exception{
@@ -74,6 +82,8 @@ public class CityController {
                 }
                 //Resource cityFile = this._storageService.getCityFile(city.getCityImage());
                 city.setCityImage(imageSrc);
+                int stayCount = this.cityRepository.getPgInCity(city.getCityName());
+                city.setTotalStays(stayCount);
             }
             resultData.data=(ArrayList)cityData;
             resultData.total=cityData.size();

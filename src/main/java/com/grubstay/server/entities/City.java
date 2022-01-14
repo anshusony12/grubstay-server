@@ -24,6 +24,8 @@ public class City {
     private String cityImage;
 
     private boolean status;
+
+    private int totalStays;
     // One City can have many locations
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "city")
     @JsonIgnore

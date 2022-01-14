@@ -62,4 +62,5 @@ public class CityServiceImpl implements CityService {
         List<City> list=cityRepository.findAll();
         return list;
     }
+
 }

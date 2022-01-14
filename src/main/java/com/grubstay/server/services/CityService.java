@@ -11,4 +11,5 @@ public interface CityService {
     public void deleteCity(int cityId) throws HelperException;
     public City updateCity(City city) throws HelperException;
     public List<City> getAllCity() throws HelperException;
+
 }

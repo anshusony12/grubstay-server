@@ -106,7 +106,7 @@ public class LandMarkController {
                             }
                         }
                         else{
-                            File defaultImage=new File(this._storageService.getLandMarkPath(), "defaultLandMark.jpg");
+                            File defaultImage=new File(this._storageService.getLandMarkPath(), "default_landmark.jpeg");
                             if(defaultImage.exists()){
                                 String imageSrc=this._storageService.getImageSrc(defaultImage);
                                 if(imageSrc!=null){
