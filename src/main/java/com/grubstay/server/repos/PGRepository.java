@@ -1,11 +1,15 @@
 package com.grubstay.server.repos;
 
 import com.grubstay.server.entities.PayingGuest;
+import com.grubstay.server.entities.StayGallery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
 
 @Repository
 public interface PGRepository extends JpaRepository<PayingGuest, String> {
@@ -19,4 +23,10 @@ public interface PGRepository extends JpaRepository<PayingGuest, String> {
     @Modifying
     @Transactional
     public void deletePgById(String pgId);
+
+    @Query("from PayingGuest p where p.subLocation.subLocationId=?1")
+    public List<PayingGuest> findPayingGuestBySubLocationId(Long subLocationId);
+
+    @Query(value="from StayGallery  s where s.stayId=?1 and s.galName like '%pgmain%'")
+    public  StayGallery findFirstByStayId(String stayId);
 }

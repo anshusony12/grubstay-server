@@ -14,7 +14,7 @@ public interface LandMarkRepository extends JpaRepository<LandMarks, Integer> {
     public LandMarks findLandMarksByLandMarkId(int landMarkId);
 
     @Query("from LandMarks l where l.pgStayId.pgId=?1")
-    public List<LandMarks> findLandMarksByPgStayId(long pgId);
+    public List<LandMarks> findLandMarksByPgStayId(String pgId);
 
     @Query("from LandMarks l where l.landMarkName=?1 and l.pgStayId.pgId=?2")
     public LandMarks findLandMarksByLandMarkNameAndPgStayId(String landMarkName, String pgId);

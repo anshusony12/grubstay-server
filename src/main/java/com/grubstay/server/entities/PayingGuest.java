@@ -37,6 +37,9 @@ public class PayingGuest {
 
     private double distFromSubLoc;
 
+    private String pgImage;
+    private String pgImageName;
+
     //Many PayingGuest can be available in single location
     @ManyToOne(fetch = FetchType.EAGER)
     private SubLocation subLocation;

@@ -12,4 +12,5 @@ public interface PGService {
     public PayingGuest createPG(PayingGuest pg) throws PGFoundException;
     public PayingGuest findPGByNameAndSubLocation(String name, Long sLId);
     public List<PayingGuest> loadAllPGData();
+    public List<PayingGuest> findPayingGuestBySubLocationId(long subLocationId);
 }

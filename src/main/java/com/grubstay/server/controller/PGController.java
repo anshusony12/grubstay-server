@@ -2,6 +2,7 @@ package com.grubstay.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grubstay.server.entities.*;
+import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.ResultData;
 import com.grubstay.server.repos.*;
 import com.grubstay.server.services.PGService;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/pg")
@@ -45,6 +49,9 @@ public class PGController {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private LandMarkRepository landMarkRepository;
 
     @PostMapping(path="/")
     public ResponseEntity addPg(@ModelAttribute("pg") PayingGuest pg,
@@ -213,6 +220,208 @@ public class PGController {
             }
             resultData.data=(ArrayList)imageList;
             resultData.total=imageList.size();
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+    @PostMapping("pgfilterData")
+    public ResponseEntity getPGDataWithFilter(@RequestBody String data){
+        ResultData resultData=new ResultData();
+        HashMap mapData=new HashMap();
+        String pgID=null;
+        Long locationId=0l;
+        final Long location_id;
+        final String user_gender;
+        final String stay_plan;
+        final String near_by;
+        String locationName=null;
+        String gender=null;
+        String stayPlan=null;
+        String nearBy=null;
+        List<PayingGuest> allPgData=null;
+        List<String> pgIdList=null;
+        List<PayingGuest> finalPgData=new ArrayList<>();
+        try{
+            try{
+                mapData=new ObjectMapper().readValue(data, HashMap.class);
+                if(mapData.get("locationId")!=null) {
+                    locationId = Long.parseLong(mapData.get("locationId").toString());
+                }
+                if(mapData.get("gender")!=null) {
+                    gender =mapData.get("gender").toString();
+                }
+                if(mapData.get("nearby")!=null){
+                    nearBy=mapData.get("nearby").toString();
+                }
+                if(mapData.get("stayPlan")!=null){
+                    stayPlan=mapData.get("stayPlan").toString();
+                }
+            }
+            catch(Exception e){
+                resultData.error="Unable to Parse Data!";
+                e.printStackTrace();
+            }
+            location_id=locationId;
+            user_gender=gender;
+            stay_plan=stayPlan;
+            near_by=nearBy;
+            if(location_id!=0){
+                List<SubLocation> allSubLocation=this.subLocationRepository.findAll();
+                List<SubLocation> filteredSubLocation=allSubLocation.stream().filter(s -> s.getLocation().getLocationId()==location_id).collect(Collectors.toList());
+                allPgData=new ArrayList<>();
+                for(SubLocation subLocation:filteredSubLocation){
+                    List<PayingGuest> pgData=subLocation.getPayingGuestList();
+                    allPgData.addAll(pgData);
+                }
+                if(user_gender!=null && user_gender!="") {
+                    allPgData=allPgData.stream().filter(pg -> pg.getPgGender().equals(user_gender)).collect(Collectors.toList());
+                }
+                if(stay_plan!=null && stay_plan!=""){
+                    if(stay_plan.equals("Monthly")){
+                        allPgData=allPgData.stream().filter(pg -> pg.isMonthly() == true).collect(Collectors.toList());
+                    }
+                    else if(stay_plan.equals("Weekly")){
+                        allPgData=allPgData.stream().filter(pg -> pg.isWeekly() == true).collect(Collectors.toList());
+                    }
+                    else if(stay_plan.equals("Daily")){
+                        allPgData= allPgData.stream().filter(pg -> pg.isDaily() == true).collect(Collectors.toList());
+                    }
+                }
+                if(near_by!=null && near_by!=""){
+                    pgIdList=new ArrayList();
+                    for(PayingGuest pg: allPgData){
+                        List<LandMarks> allLandMarks=pg.getLandMarksList();
+                        List<LandMarks> filteredLandMarkList=allLandMarks.stream().filter(lm -> lm.getLandMarkName().equalsIgnoreCase(near_by) && lm.getPgStayId().getPgId().equals(pg.getPgId())).collect(Collectors.toList());
+                        if(filteredLandMarkList.size() > 0){
+                            pgIdList.add(pg.getPgId());
+                        }
+;                    }
+                }
+                List<PayingGuest> filteredPgData=null;
+                if(pgIdList!=null){
+                    if(pgIdList.size() > 0){
+                        for(String pgId: pgIdList) {
+                            filteredPgData = allPgData.stream().filter(pg -> pg.getPgId().equals(pgId)).collect(Collectors.toList());
+                            finalPgData.addAll(filteredPgData);
+                        }
+                        allPgData=finalPgData;
+                    }
+                }
+                if(allPgData.size() > 0){
+                    for(PayingGuest pg : allPgData){
+                        StayGallery galleryData = this.pgRepository.findFirstByStayId(pg.getPgId());
+                        //StayGallery galleryData=stayGalleryList.get(0);
+                        if(galleryData!=null){
+                            File file=new File(this.storageService.getPgRootPath(), galleryData.getGalName());
+                            if(file.exists()){
+                                String imageSrc=this.storageService.getImageSrc(file);
+                                if(imageSrc!=null){
+                                    pg.setPgImage(imageSrc);
+                                    pg.setPgImageName(galleryData.getGalName());
+                                }
+                            }
+                            else{
+                                File defaultImage=new File(this.storageService.getLandMarkPath(), "defaultLandMark.jpg");
+                                if(defaultImage.exists()){
+                                    String imageSrc=this.storageService.getImageSrc(defaultImage);
+                                    if(imageSrc!=null){
+                                        pg.setPgImage(imageSrc);
+                                        pg.setPgImageName("defaultLandMark.jpg");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+//                if(near_by!=null && near_by!=""){
+//                    List<LandMarks> allFilteredLandMarksData=new ArrayList<>();
+//                    for(PayingGuest payingGuest: allPgData){
+//                        List<LandMarks> allLandMarks=this.landMarkRepository.findLandMarksByPgStayId(payingGuest.getPgId());
+//                        if(allLandMarks.size()>0){
+//                               List<LandMarks> filteredLandMark=allLandMarks.stream().filter(lm -> lm.getLandMarkName().equals(near_by)).collect(Collectors.toList());
+//                               allFilteredLandMarksData.addAll(filteredLandMark);
+//                        }
+//                    }
+//                    List<PayingGuest> pgFilteredUsingLandMarks=new ArrayList<>();
+//                    if(allFilteredLandMarksData.size() >  0){
+//                        for(LandMarks landMark : allFilteredLandMarksData){
+//                            pgFilteredUsingLandMarks= allPgData.stream().filter(pg -> pg.getPgId()==landMark.getPgStayId().getPgId()).collect(Collectors.toList());
+//                            allPgData.addAll(pgFilteredUsingLandMarks);
+//                        }
+//                    }
+//                }
+            }
+            resultData.success="Fetched";
+            resultData.data=(ArrayList) allPgData;
+        }
+        catch(Exception e1){
+            resultData.error=e1.getMessage();
+            e1.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @GetMapping("/{pgId}")
+    public ResponseEntity getPgDetails(@PathVariable("pgId") String pgId){
+            ResultData resultData=new ResultData();
+            try{
+                PayingGuest pg=this.pgRepository.findPayingGuestByPgId(pgId);
+                if(pg!=null){
+                    ArrayList pgData=new ArrayList();
+                    pgData.add(pg);
+                    resultData.data=pgData;
+                }
+                else{
+                    throw new HelperException("PG Not Found!");
+                }
+            }
+            catch(Exception e){
+                resultData.error=e.getMessage();
+                e.printStackTrace();
+            }
+            return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+    @GetMapping("landmarks/{pgId}")
+    public ResponseEntity getLandmarkDetails(@PathVariable("pgId") String pgId){
+        ResultData resultData=new ResultData();
+        try{
+            List<LandMarks> landMarkData=this.landMarkRepository.findLandMarksByPgStayId(pgId);
+            int count=0;
+            if(landMarkData.size() > 0){
+                for(LandMarks landMark : landMarkData){
+                    String landMarkImage=landMark.getLandMarkImageName();
+                    if(landMarkImage!=null){
+                        File file=new File(this.storageService.getLandMarkPath(), landMarkImage);
+                        if(file.exists()){
+                            String landImageSrc=this.storageService.getImageSrc(file);
+                            if(landImageSrc!=null){
+                                landMark.setLandMarkImage(landImageSrc);
+                                count++;
+                            }
+                        }
+                        else{
+                            File file1=new File(this.storageService.getLandMarkPath(), "defaultLandMark.jpg");
+                            if(file1.exists()){
+                                String landImageSrc=this.storageService.getImageSrc(file1);
+                                if(landImageSrc!=null){
+                                    landMark.setLandMarkImage(landImageSrc);
+                                    count++;
+                                }
+                            }
+                        }
+                    }
+                }
+                resultData.total=count;
+                resultData.data=(ArrayList)landMarkData;
+                resultData.success="Found";
+            }
+            else{
+                resultData.total=0;
+                resultData.success="Not Found";
+            }
         }
         catch(Exception e){
             resultData.error=e.getMessage();

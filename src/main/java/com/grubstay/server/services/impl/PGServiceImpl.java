@@ -43,4 +43,20 @@ public class PGServiceImpl implements PGService {
         return pgList;
     }
 
+    @Override
+    public List<PayingGuest> findPayingGuestBySubLocationId(long subLocationId) {
+        List<PayingGuest> pgData=null;
+        try{
+            pgData=this.pgRepository.findPayingGuestBySubLocationId(subLocationId);
+            if(pgData.size() > 0){
+                return pgData;
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+        return null;
+    }
+
 }
