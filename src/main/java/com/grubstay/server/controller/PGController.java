@@ -485,6 +485,16 @@ public class PGController {
                                    }
                                 }
                             }
+                        }else{
+                            File defaultImage=new File(this.storageService.getWorkingPath()+"static/image", "defaultImage.jpeg");
+                            if(defaultImage.exists()){
+                                String imageSrc= this.storageService.getImageSrc(defaultImage);
+                                if(imageSrc!=null){
+                                    count++;
+                                    payingGuest.setPgImage(imageSrc);
+                                    payingGuest.setPgImageName("defaultImage.jpeg");
+                                }
+                            }
                         }
                     }
                 }
