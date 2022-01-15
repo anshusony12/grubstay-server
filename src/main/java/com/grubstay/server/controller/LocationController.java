@@ -42,7 +42,7 @@ public class LocationController {
                     String imageSrc = this._storageService.getImageSrc(file);
                     city.setCityImage(imageSrc);
                 }else{
-                    File defaultImage = new File("src/main/resources/static/image/","defaultImage.jpeg");
+                    File defaultImage = new File(this._storageService.getWorkingPath()+"static/image/","defaultImage.jpeg");
                     if(defaultImage.exists()){
                         String imageSrc=this._storageService.getImageSrc(defaultImage);
                         if(imageSrc!=null){

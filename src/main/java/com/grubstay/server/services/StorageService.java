@@ -32,6 +32,10 @@ public class StorageService {
     private final String pgPath="/pg";
     private final String landMarkPath="/landmark";
 
+    public String getWorkingPath(){
+        return localWorkingPath;
+    }
+
     public void storeCity(MultipartFile file) throws Exception{
         try{
             File savePath = ResourceUtils.getFile(this.rootLocation+cityPath);

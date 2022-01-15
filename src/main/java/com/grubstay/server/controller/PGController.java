@@ -215,7 +215,7 @@ public class PGController {
                 if(file.exists()){
                     imageSrc = this.storageService.getImageSrc(file);
                 }else{
-                    File defaultImage = new File("src/main/resources/static/image/","defaultImage.jpeg");
+                    File defaultImage = new File(this.storageService.getWorkingPath()+"static/image/","defaultImage.jpeg");
                     if(defaultImage.exists()){
                          imageSrc=this.storageService.getImageSrc(defaultImage);
                         if(imageSrc!=null){
@@ -340,12 +340,12 @@ public class PGController {
 //                                        pg.setPgImageName("defaultLandMark.jpg");
 //                                    }
 //                                }
-                                File defaultImage = new File("src/main/resources/static/image/","defaultImage.jpeg");
+                                File defaultImage = new File(this.storageService.getWorkingPath()+"static/image/","defaultImage.jpeg");
                                 if(defaultImage.exists()){
                                     String imageSrc=this.storageService.getImageSrc(defaultImage);
                                     if(imageSrc!=null){
                                         pg.setPgImage(imageSrc);
-                                        pg.setPgImageName("defaultLandMark.jpg");
+                                        pg.setPgImageName("defaultImage.jpeg");
                                     }
                                 }
                             }
@@ -427,7 +427,7 @@ public class PGController {
                                     count++;
                                 }
                             }*/
-                            File defaultImage = new File("src/main/resources/static/image/","defaultImage.jpeg");
+                            File defaultImage = new File(this.storageService.getWorkingPath()+"static/image/","defaultImage.jpeg");
                             if(defaultImage.exists()){
                                 String imageSrc=this.storageService.getImageSrc(defaultImage);
                                 if(imageSrc!=null){
