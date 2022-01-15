@@ -24,4 +24,7 @@ public interface SubLocationRepository extends JpaRepository<SubLocation, Long> 
 
     @Query("select sl from SubLocation sl where sl.subLocationName=?1 and sl.location.locationId=?2")
     public SubLocation subLocaionUsingNameAndLocationId(String subLocationName, Long subLocationId);
+
+    @Query(value = "select distinct count(sub_location_id) from sub_location",nativeQuery = true)
+    public int getSubLocationsCount();
 }

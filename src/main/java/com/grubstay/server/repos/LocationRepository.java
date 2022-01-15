@@ -18,4 +18,7 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 
     @Query("select l from Location l where l.locationName = ?1 and l.city.cityId = ?2")
     public Location locationUsingCityAndLocationName(String locationName, Integer city);
+
+    @Query(value = "select distinct count(location_id) from location",nativeQuery = true)
+    public int getLocationsCount();
 }

@@ -36,4 +36,13 @@ public interface PGRepository extends JpaRepository<PayingGuest, String> {
             "inner join city on city.city_id=location.city_city_id " +
             "where city.city_id=?1", nativeQuery = true)
     public List<PayingGuest> loadAllPGUsingCityId(Integer cityId);
+
+    @Query(value = "select distinct count(pg_id) from paying_guest",nativeQuery = true)
+    public int getPgCounts();
+
+    @Query(value = "select distinct count(pg_id) from paying_guest where pg_gender = 'male'",nativeQuery = true)
+    public int getPgMaleCounts();
+
+    @Query(value = "select distinct count(pg_id) from paying_guest where pg_gender = 'female'",nativeQuery = true)
+    public int getPgFemaleCounts();
 }

@@ -1,27 +1,26 @@
 package com.grubstay.server;
 
-import com.grubstay.server.entities.LandMarks;
-import com.grubstay.server.entities.PGAmenitiesServices;
-import com.grubstay.server.entities.PGRoomFacility;
-import com.grubstay.server.entities.PayingGuest;
+import com.grubstay.server.entities.*;
 import com.grubstay.server.services.StorageService;
+import com.grubstay.server.services.UserService;
 import com.grubstay.server.services.impl.PGServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.*;
 
 @SpringBootApplication
 public class GrubstayApplication implements CommandLineRunner {
 
 	@Autowired
-	private PGServiceImpl pgService;
+	private UserService userService;
 
 	@Autowired
-	private StorageService _storageService;
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public static void main(String[] args) {
 		SpringApplication.run(GrubstayApplication.class, args);
@@ -29,53 +28,32 @@ public class GrubstayApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-//		PayingGuest pg=new PayingGuest();
-//		pg.setPgName("Posh PG");
-//		pg.setPgDesc("Post PG for boys and girls");
-//		pg.setPgAddress("Agra Chowk Palwal");
-//		pg.setPgType("PG");
-//		pg.setPgForMale(true);
-//		pg.setPgForFemale(true);
-//		pg.setPgForBoth(true);
-//		pg.setPgImage("default.png");
-//		pg.setSingleMemPgPrc(5000);
-//		pg.setDistFromSubLoc(7000);
-//		pg.setTripleMemPgPrc(9000);
-//		pg.setDistFromSubLoc(500);
-//
-//		PGAmenitiesServices amenitiesServices=new PGAmenitiesServices();
-//		amenitiesServices.setSecuritySurvialance(true);
-//		amenitiesServices.setWifi(true);
-//		amenitiesServices.setDiningArea(true);
-//		amenitiesServices.setMeals(true);
-//		amenitiesServices.setPowerBackUp(true);
-//		amenitiesServices.setLift(true);
-//		amenitiesServices.setWashingMachine(true);
-//		amenitiesServices.setParkingArea(true);
-//		amenitiesServices.setWaterFilter(true);
-//		amenitiesServices.setPgStayId(pg);
-//
-//		PGRoomFacility roomFacility=new PGRoomFacility();
-//		roomFacility.setAttachedWashroom(true);
-//		roomFacility.setBedWithMattress(true);
-//		roomFacility.setCeilingFan(true);
-//		roomFacility.setHotWatersupply(true);
-//		roomFacility.setAirCooler(true);
-//		roomFacility.setTvDth(true);
-//		roomFacility.setWardrobe(true);
-//		roomFacility.setSafetyLocker(true);
-//		roomFacility.setPgStayId(pg);
-//
-//		List<LandMarks> landMarks=new ArrayList<>();
-//
-//		LandMarks landMark=new LandMarks();
-//		landMark.setLandMarkName("Panchwati");
-//		landMark.setPgStayId(pg);
-//		landMarks.add(landMark);
-//
-//
-//		PayingGuest payingGuest=this.pgService.createPG(pg, amenitiesServices, roomFacility, landMarks);
-//		System.out.println(payingGuest);
-
+		try{
+			User admin = this.userService.getUser("admin");
+			if(admin==null) {
+				User user = new User();
+				user.setDob(new Date(2022, 01, 26));
+				user.setEmail("info@grubstay.com");
+				user.setPassword(this.bCryptPasswordEncoder.encode("admin@grubstay"));
+				user.setEnabled(true);
+				user.setFirstName("Grubstay");
+				user.setLastName(" ");
+				user.setGender("company");
+				user.setPhone(Long.parseLong("8050163861"));
+				user.setWhatsapp(Long.parseLong("8050163861"));
+				user.setUsername("admin");
+				Set<UserRoles> roles = new HashSet<>();
+				Role role1 = new Role();
+				role1.setRoleId(2L);
+				role1.setRoleName("ADMIN");
+				UserRoles userRoles = new UserRoles();
+				userRoles.setUser(user);
+				userRoles.setRole(role1);
+				roles.add(userRoles);
+				User user1 = this.userService.createUser(user, roles);
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 }

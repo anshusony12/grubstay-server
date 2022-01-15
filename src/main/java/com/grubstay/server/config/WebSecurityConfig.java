@@ -46,9 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .cors().disable()
                 .authorizeRequests()
-                .antMatchers("/admin/**").hasAnyAuthority("ADMIN","SUB-ADMIN")
-                .antMatchers("/book").hasAnyAuthority("NORMAL","ADMIN","SUB-ADMIN")
-                .antMatchers("/").permitAll()
+                .antMatchers("**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .and()
                 .exceptionHandling().accessDeniedPage("/403");

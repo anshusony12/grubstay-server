@@ -24,4 +24,7 @@ public interface CityRepository extends JpaRepository<City, Integer> {
             "inner join grubstay.city c on c.city_id = l.city_city_id and c.city_name = ?1", nativeQuery = true)
     public int getPgInCity(String cityName);
 
+    @Query(value = "select distinct count(city_id) from city",nativeQuery = true)
+    public int getCitiesCount();
+
 }
