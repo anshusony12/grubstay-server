@@ -214,17 +214,16 @@ public class PGController {
                 //File defaultPg = new File(pgRootPath, "defaultcity.jpeg");
                 if(file.exists()){
                     imageSrc = this.storageService.getImageSrc(file);
-                }else{
-                    File defaultImage = new File(this.storageService.getWorkingPath()+"static/image/","defaultImage.jpeg");
-                    if(defaultImage.exists()){
-                         imageSrc=this.storageService.getImageSrc(defaultImage);
-                        if(imageSrc!=null){
+                    imageList.add(imageSrc);
+                }else {
+                    File defaultImage = new File(this.storageService.getWorkingPath() + "static/image/", "defaultImage.jpeg");
+                    if (defaultImage.exists()) {
+                        imageSrc = this.storageService.getImageSrc(defaultImage);
+                        if (imageSrc != null) {
                             imageList.add(imageSrc);
                         }
                     }
                 }
-                //Resource cityFile = this._storageService.getCityFile(city.getCityImage());
-                imageList.add(imageSrc);
             }
             resultData.data=(ArrayList)imageList;
             resultData.total=imageList.size();
@@ -445,6 +444,56 @@ public class PGController {
             else{
                 resultData.total=0;
                 resultData.success="Not Found";
+            }
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @GetMapping("loadAllPG/{cityId}")
+    public ResponseEntity loadAllPGUsingCityId(@PathVariable("cityId") Integer cityId){
+        ResultData resultData=new ResultData();
+        try{
+            List<PayingGuest> payingGuestsList=this.pgRepository.loadAllPGUsingCityId(cityId);
+            if(payingGuestsList.size() > 0){
+                int count=0;
+                for(PayingGuest payingGuest: payingGuestsList){
+                    String pgId=payingGuest.getPgId();
+                    if(pgId!=null){
+                        StayGallery galleryImage=this.pgRepository.findFirstByStayId(pgId);
+                        if(galleryImage!=null){
+                            File file=new File(this.storageService.getPgRootPath(), galleryImage.getGalName());
+                            if(file.exists()){
+                                String imageSrc= this.storageService.getImageSrc(file);
+                                if(imageSrc!=null){
+                                    count++;
+                                    payingGuest.setPgImage(imageSrc);
+                                    payingGuest.setPgImageName(galleryImage.getGalName());
+                                }
+                            }
+                            else{
+                                File defaultImage=new File(this.storageService.getWorkingPath()+"static/image", "defaultImage.jpeg");
+                                if(defaultImage.exists()){
+                                   String imageSrc= this.storageService.getImageSrc(defaultImage);
+                                   if(imageSrc!=null){
+                                       count++;
+                                       payingGuest.setPgImage(imageSrc);
+                                       payingGuest.setPgImageName("defaultImage.jpeg");
+                                   }
+                                }
+                            }
+                        }
+                    }
+                }
+                resultData.total=count;
+                resultData.success="success";
+                resultData.data=(ArrayList) payingGuestsList;
+            }else{
+                resultData.total=0;
+                resultData.success="Failed";
             }
         }
         catch(Exception e){

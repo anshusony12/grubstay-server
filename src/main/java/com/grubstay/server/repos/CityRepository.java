@@ -23,4 +23,5 @@ public interface CityRepository extends JpaRepository<City, Integer> {
             "inner join grubstay.location l on l.location_id = sb.location_location_id " +
             "inner join grubstay.city c on c.city_id = l.city_city_id and c.city_name = ?1", nativeQuery = true)
     public int getPgInCity(String cityName);
+
 }

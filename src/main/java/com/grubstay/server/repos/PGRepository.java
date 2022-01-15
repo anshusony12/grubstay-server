@@ -29,4 +29,11 @@ public interface PGRepository extends JpaRepository<PayingGuest, String> {
 
     @Query(value="from StayGallery  s where s.stayId=?1 and s.galName like '%pgmain%'")
     public  StayGallery findFirstByStayId(String stayId);
+
+    @Query(value = "select * from paying_guest  " +
+            "inner join sub_location on sub_location.sub_location_id = paying_guest.sub_location_sub_location_id  " +
+            "inner join location on location.location_id = sub_location.location_location_id  " +
+            "inner join city on city.city_id=location.city_city_id " +
+            "where city.city_id=?1", nativeQuery = true)
+    public List<PayingGuest> loadAllPGUsingCityId(Integer cityId);
 }
