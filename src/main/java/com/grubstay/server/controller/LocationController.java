@@ -38,8 +38,18 @@ public class LocationController {
             for(Location l: locations){
                 City city=l.getCity();
                 File file=new File(this._storageService.getCityRootPath(), city.getCityImageName());
-                String imageSrc=this._storageService.getImageSrc(file);
-                city.setCityImage(imageSrc);
+                if(file.exists()) {
+                    String imageSrc = this._storageService.getImageSrc(file);
+                    city.setCityImage(imageSrc);
+                }else{
+                    File defaultImage = new File("src/main/resources/static/image/","defaultImage.jpeg");
+                    if(defaultImage.exists()){
+                        String imageSrc=this._storageService.getImageSrc(defaultImage);
+                        if(imageSrc!=null){
+                            city.setCityImage(imageSrc);
+                        }
+                    }
+                }
                 l.setCity(city);
             }
             ArrayList allLocations=new ArrayList();

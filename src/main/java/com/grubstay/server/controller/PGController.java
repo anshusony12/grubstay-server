@@ -214,6 +214,14 @@ public class PGController {
                 //File defaultPg = new File(pgRootPath, "defaultcity.jpeg");
                 if(file.exists()){
                     imageSrc = this.storageService.getImageSrc(file);
+                }else{
+                    File defaultImage = new File("src/main/resources/static/image/","defaultImage.jpeg");
+                    if(defaultImage.exists()){
+                         imageSrc=this.storageService.getImageSrc(defaultImage);
+                        if(imageSrc!=null){
+                            imageList.add(imageSrc);
+                        }
+                    }
                 }
                 //Resource cityFile = this._storageService.getCityFile(city.getCityImage());
                 imageList.add(imageSrc);
@@ -324,7 +332,15 @@ public class PGController {
                                 }
                             }
                             else{
-                                File defaultImage=new File(this.storageService.getLandMarkPath(), "defaultLandMark.jpg");
+//                                File defaultImage=new File(this.storageService.getLandMarkPath(), "defaultLandMark.jpg");
+//                                if(defaultImage.exists()){
+//                                    String imageSrc=this.storageService.getImageSrc(defaultImage);
+//                                    if(imageSrc!=null){
+//                                        pg.setPgImage(imageSrc);
+//                                        pg.setPgImageName("defaultLandMark.jpg");
+//                                    }
+//                                }
+                                File defaultImage = new File("src/main/resources/static/image/","defaultImage.jpeg");
                                 if(defaultImage.exists()){
                                     String imageSrc=this.storageService.getImageSrc(defaultImage);
                                     if(imageSrc!=null){
@@ -403,11 +419,19 @@ public class PGController {
                             }
                         }
                         else{
-                            File file1=new File(this.storageService.getLandMarkPath(), "defaultLandMark.jpg");
+                            /*File file1=new File(this.storageService.getLandMarkPath(), "defaultLandMark.jpg");
                             if(file1.exists()){
                                 String landImageSrc=this.storageService.getImageSrc(file1);
                                 if(landImageSrc!=null){
                                     landMark.setLandMarkImage(landImageSrc);
+                                    count++;
+                                }
+                            }*/
+                            File defaultImage = new File("src/main/resources/static/image/","defaultImage.jpeg");
+                            if(defaultImage.exists()){
+                                String imageSrc=this.storageService.getImageSrc(defaultImage);
+                                if(imageSrc!=null){
+                                    landMark.setLandMarkImage(imageSrc);
                                     count++;
                                 }
                             }

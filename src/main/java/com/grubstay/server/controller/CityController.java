@@ -74,11 +74,16 @@ public class CityController {
             for (City city : cityData) {
                 String cityRootPath = this._storageService.getCityRootPath();
                 File file = new File(cityRootPath, city.getCityImageName());
-                File defaultCity = new File(cityRootPath, "defaultcity.jpeg");
                 if(file.exists()){
                     imageSrc = this._storageService.getImageSrc(file);
                 }else{
-                    imageSrc = this._storageService.getImageSrc(defaultCity);
+                    File defaultImage = new File("src/main/resources/static/image/","defaultImage.jpeg");
+                    if(defaultImage.exists()) {
+                        imageSrc = this._storageService.getImageSrc(defaultImage);
+                        if (imageSrc != null) {
+                            city.setCityImage(imageSrc);
+                        }
+                    }
                 }
                 //Resource cityFile = this._storageService.getCityFile(city.getCityImage());
                 city.setCityImage(imageSrc);
