@@ -37,8 +37,8 @@ public class GrubstayApplication implements CommandLineRunner {
 				user.setPassword(this.bCryptPasswordEncoder.encode("admin@grubstay"));
 				user.setEnabled(true);
 				user.setFirstName("Grubstay");
-				user.setLastName(" ");
-				user.setGender("company");
+				user.setLastName("User");
+				user.setGender("male");
 				user.setPhone(Long.parseLong("8050163861"));
 				user.setWhatsapp(Long.parseLong("8050163861"));
 				user.setUsername("admin");

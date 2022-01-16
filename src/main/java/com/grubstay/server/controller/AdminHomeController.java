@@ -1,22 +1,24 @@
 package com.grubstay.server.controller;
 
 import com.grubstay.server.entities.City;
+import com.grubstay.server.entities.Role;
+import com.grubstay.server.entities.User;
+import com.grubstay.server.entities.UserRoles;
+import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.ResultData;
-import com.grubstay.server.repos.CityRepository;
-import com.grubstay.server.repos.LocationRepository;
-import com.grubstay.server.repos.PGRepository;
-import com.grubstay.server.repos.SubLocationRepository;
+import com.grubstay.server.repos.*;
+import com.grubstay.server.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import javax.xml.transform.Result;
+import java.util.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -27,6 +29,9 @@ public class AdminHomeController {
     private PGRepository pgRepository;
 
     @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
     private CityRepository cityRepository;
 
     @Autowired
@@ -34,6 +39,18 @@ public class AdminHomeController {
 
     @Autowired
     private SubLocationRepository subLocationRepository;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
 
     @GetMapping("/")
     public ResponseEntity loadAllCounts() throws Exception{
@@ -58,6 +75,109 @@ public class AdminHomeController {
             list.add(0,totalCounts);
             resultData.data = list;
             resultData.total = totalCounts.size();
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+    @PostMapping("/")
+    public ResponseEntity createAdmin(@RequestBody User user) throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+            user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+            Set<UserRoles> roles = new HashSet<>();
+            Role role1 = new Role();
+            role1.setRoleId(3L);
+            role1.setRoleName("SUB-ADMIN");
+            UserRoles userRoles = new UserRoles();
+            userRoles.setUser(user);
+            userRoles.setRole(role1);
+            roles.add(userRoles);
+            User user1 = this.userService.createUser(user, roles);
+            resultData.success = "saved";
+        }
+        catch(Exception e){
+            resultData.error=e.toString();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity getAllAdminData() {
+        ResultData resultData=new ResultData();
+        try{
+            List<User> adminData=this.userService.getAllAdmin();
+            for(User user : adminData){
+                String userAuthorities="";
+                UserDetails userDetails=this.userDetailsService.loadUserByUsername(user.getUsername());
+                Collection<? extends  GrantedAuthority> authorities=userDetails.getAuthorities();
+                if(authorities.size() > 0){
+                    for (GrantedAuthority authority : authorities) {
+                        userAuthorities=userAuthorities+" "+authority.getAuthority();
+                    }
+                    user.setRoles(userAuthorities);
+                }
+
+            }
+            resultData.data=(ArrayList)adminData;
+            resultData.success="fetched";
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @PutMapping("/")
+    public ResponseEntity updateAdmin(@RequestBody User user){
+        ResultData resultData=new ResultData();
+        try{
+            if(user!=null) {
+                User existingUser=this.userRepository.findByUsername(user.getUsername());
+                existingUser.setFirstName(user.getFirstName());
+                existingUser.setLastName(user.getLastName());
+                existingUser.setPhone(user.getPhone());
+                existingUser.setWhatsapp(user.getWhatsapp());
+                if(user.getPassword()!="" && user.getPassword()!=null){
+                    existingUser.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+                }
+                existingUser.setEmail(user.getEmail());
+                existingUser.setDob(user.getDob());
+                existingUser.setGender(user.getGender());
+                this.userRepository.save(existingUser);
+                resultData.success="updated";
+            }
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity deleteAdmin(@PathVariable("userId") String userId){
+        ResultData resultData=new ResultData();
+        try{
+             User user=this.userRepository.findUserByUserId(Long.parseLong(userId));
+             if(user!=null){
+                    Set<UserRoles> userRoles=user.getUserRoles();
+                    for(UserRoles userrole : userRoles){
+                        UserRoles userRole=this.userRoleRepository.findUserRolesByUserRoleId(userrole.getUserRoleId());
+                        if(userRole!=null){
+                            this.userRoleRepository.deleteById(userrole.getUserRoleId());
+                        }
+                    }
+                    this.userRepository.deleteById(Long.parseLong(userId));
+             }
+             else{
+                 throw new HelperException("User Not Present!");
+             }
+             resultData.success="Deleted";
         }
         catch(Exception e){
             resultData.error=e.getMessage();

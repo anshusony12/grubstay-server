@@ -4,6 +4,8 @@ import com.grubstay.server.entities.User;
 import com.grubstay.server.entities.UserIdProof;
 import com.grubstay.server.entities.UserRoles;
 
+import javax.jws.soap.SOAPBinding;
+import java.util.List;
 import java.util.Set;
 
 public interface UserService {
@@ -15,4 +17,6 @@ public interface UserService {
     public void deleteUser(Long userId);
 
     public boolean updateUserIdProof(long userId, UserIdProof userIdProof);
+
+    public List<User>  getAllAdmin() throws  Exception;
 }

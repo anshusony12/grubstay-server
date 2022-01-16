@@ -3,6 +3,7 @@ package com.grubstay.server.services.impl;
 import com.grubstay.server.entities.User;
 import com.grubstay.server.entities.UserIdProof;
 import com.grubstay.server.entities.UserRoles;
+import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.UserFoundException;
 import com.grubstay.server.repos.RoleRepository;
 import com.grubstay.server.repos.UserRepository;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -59,5 +62,24 @@ public class UserServiceImpl implements UserService {
         user.setUserIdProof(userIdProof);
         this.userRepository.save(user);
         return true;
+    }
+
+    @Override
+    public List<User> getAllAdmin() throws Exception{
+        List<User> adminData=new ArrayList<>();
+        try{
+                List<User> allAdminData=this.userRepository.loadAllAdmin();
+                if(allAdminData.size()>0){
+                    adminData=allAdminData;
+                }
+                else{
+                    throw new HelperException("No Record Found");
+                }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw e;
+        }
+        return adminData;
     }
 }

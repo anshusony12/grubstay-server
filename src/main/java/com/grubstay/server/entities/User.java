@@ -23,6 +23,7 @@ public class User {
     private String password;
     private Date dob;
     private boolean enabled = true;
+    private String roles;
 
     // user has many roles
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
@@ -135,6 +136,10 @@ public class User {
     public void setUserIdProof(UserIdProof userIdProof) {
         this.userIdProof = userIdProof;
     }
+
+    public String getRoles() { return roles; }
+
+    public void setRoles(String roles) { this.roles = roles;}
 
     public User() {
     }
