@@ -1,9 +1,6 @@
 package com.grubstay.server.controller;
 
-import com.grubstay.server.entities.City;
-import com.grubstay.server.entities.Role;
-import com.grubstay.server.entities.User;
-import com.grubstay.server.entities.UserRoles;
+import com.grubstay.server.entities.*;
 import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.ResultData;
 import com.grubstay.server.repos.*;
@@ -17,7 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.transform.Result;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RestController
@@ -51,6 +49,9 @@ public class AdminHomeController {
 
     @Autowired
     private UserRoleRepository userRoleRepository;
+
+    @Autowired
+    private CallbackRepository callbackRepository;
 
     @GetMapping("/")
     public ResponseEntity loadAllCounts() throws Exception{
@@ -105,6 +106,41 @@ public class AdminHomeController {
         return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
 
+    @PostMapping("/sendRequest")
+    public ResponseEntity sendRequest(@RequestBody CallbackRequest request) throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            String date = now.format(format);
+            request.setStatus("Request");
+            request.setDate(date.toString());
+            //System.out.println(request);
+            this.callbackRepository.save(request);
+            resultData.success = "saved";
+        }
+        catch(Exception e){
+            resultData.error=e.toString();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @PutMapping("/updateRequest")
+    public ResponseEntity updateRequest(@RequestBody CallbackRequest request) throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+            //System.out.println(request);
+            this.callbackRepository.save(request);
+            resultData.success = "saved";
+        }
+        catch(Exception e){
+            resultData.error=e.toString();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
     @GetMapping("/all")
     public ResponseEntity getAllAdminData() {
         ResultData resultData=new ResultData();
@@ -123,6 +159,21 @@ public class AdminHomeController {
 
             }
             resultData.data=(ArrayList)adminData;
+            resultData.success="fetched";
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @GetMapping("/callRequests")
+    public ResponseEntity getCallRequests() {
+        ResultData resultData=new ResultData();
+        try{
+            List<CallbackRequest> all = this.callbackRepository.findAll();
+            resultData.data = (ArrayList) all;
             resultData.success="fetched";
         }
         catch(Exception e){

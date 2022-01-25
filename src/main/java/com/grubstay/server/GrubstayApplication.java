@@ -10,7 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Date;
 import java.util.*;
 
 @SpringBootApplication
@@ -31,8 +30,9 @@ public class GrubstayApplication implements CommandLineRunner {
 		try{
 			User admin = this.userService.getUser("admin");
 			if(admin==null) {
+				Date date = new Date();
 				User user = new User();
-				user.setDob(new Date(2022, 01, 26));
+				user.setDob(date);
 				user.setEmail("info@grubstay.com");
 				user.setPassword(this.bCryptPasswordEncoder.encode("admin@grubstay"));
 				user.setEnabled(true);

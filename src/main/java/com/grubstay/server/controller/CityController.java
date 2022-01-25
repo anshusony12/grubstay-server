@@ -1,6 +1,7 @@
 package com.grubstay.server.controller;
 
 import com.grubstay.server.entities.City;
+import com.grubstay.server.entities.Location;
 import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.ResultData;
 import com.grubstay.server.repos.CityRepository;
@@ -24,7 +25,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/city")
@@ -42,6 +46,11 @@ public class CityController {
 
     @Autowired
     public CityRepository cityRepository;
+
+    @GetMapping("/test")
+    public String test(){
+        return "Welcome to Grubstay.com";
+    }
 
     @PostMapping(path="/")
     public ResponseEntity addCity(@ModelAttribute("city") City city, @RequestParam("image") MultipartFile file) throws Exception{
@@ -161,6 +170,21 @@ public class CityController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/cityWithLocation")
+    public ResponseEntity cityWithLocation() throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+            List list = this.cityRepository.citiesWithLocation();
+            resultData.data = (ArrayList) list;
+            resultData.total = list.size();
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
 
     /*@GetMapping(

@@ -4,7 +4,6 @@ import com.grubstay.server.entities.User;
 import com.grubstay.server.entities.UserIdProof;
 import com.grubstay.server.entities.UserRoles;
 
-import javax.jws.soap.SOAPBinding;
 import java.util.List;
 import java.util.Set;
 

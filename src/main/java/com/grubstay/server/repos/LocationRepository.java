@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface LocationRepository extends JpaRepository<Location, Long> {
     public Location findLocationByLocationId(Long locationId);

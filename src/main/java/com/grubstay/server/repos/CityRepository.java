@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
+
 @Repository
 public interface CityRepository extends JpaRepository<City, Integer> {
     public City findCityByCityId(int cityId);
@@ -26,5 +28,10 @@ public interface CityRepository extends JpaRepository<City, Integer> {
 
     @Query(value = "select distinct count(city_id) from city",nativeQuery = true)
     public int getCitiesCount();
+
+    @Query(value = "select c.city_id,c.city_name,location.location_id,location.location_name from city c " +
+            "inner join location on location.city_city_id = c.city_id " +
+            "where c.status = 1 and location.status = 1",nativeQuery = true)
+    public List<Map<String,String>> citiesWithLocation();
 
 }

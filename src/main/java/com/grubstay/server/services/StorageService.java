@@ -27,13 +27,13 @@ public class StorageService {
 
     private final String deploymentPath="target/classes/";
     private final String localWorkingPath="src/main/resources/";
-    private final String rootLocation= Paths.get(localWorkingPath+"static/image/").toString();
+    private final String rootLocation= Paths.get(deploymentPath+"static/image/").toString();
     private final String cityPath="/city";
     private final String pgPath="/pg";
     private final String landMarkPath="/landmark";
 
     public String getWorkingPath(){
-        return localWorkingPath;
+        return deploymentPath;
     }
 
     public void storeCity(MultipartFile file) throws Exception{
