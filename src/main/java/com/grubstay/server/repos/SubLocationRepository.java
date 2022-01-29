@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
+
 @Repository
 public interface SubLocationRepository extends JpaRepository<SubLocation, Long> {
     public SubLocation findSubLocationBySubLocationId(Long subLocationId);
@@ -27,4 +29,7 @@ public interface SubLocationRepository extends JpaRepository<SubLocation, Long> 
 
     @Query(value = "select distinct count(sub_location_id) from sub_location",nativeQuery = true)
     public int getSubLocationsCount();
+
+    @Query(value = "select * from sub_location where location_location_id = ?1 and status = 1",nativeQuery = true)
+    public List<SubLocation> getSubLocationsByLocationId(Long locationId);
 }

@@ -2,8 +2,10 @@ package com.grubstay.server.controller;
 
 import com.grubstay.server.entities.City;
 import com.grubstay.server.entities.Location;
+import com.grubstay.server.entities.SubLocation;
 import com.grubstay.server.helper.HelperException;
 import com.grubstay.server.helper.ResultData;
+import com.grubstay.server.repos.SubLocationRepository;
 import com.grubstay.server.services.CityService;
 import com.grubstay.server.services.LocationService;
 import com.grubstay.server.services.StorageService;
@@ -29,6 +31,9 @@ public class LocationController {
 
     @Autowired
     private StorageService _storageService;
+
+    @Autowired
+    private SubLocationRepository subLocationRepository;
 
     @GetMapping("/")
     public ResponseEntity loadAllLocation(){
@@ -146,5 +151,21 @@ public class LocationController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(resutlData, HttpStatus.OK);
+    }
+
+    @GetMapping("/subLocation/{locationId}")
+    public ResponseEntity getSubLocationsByLocationId(@PathVariable("locationId") Long locationId){
+        ResultData resultData=new ResultData();
+        try{
+            List<SubLocation> subLocations = this.subLocationRepository.getSubLocationsByLocationId(locationId);
+            resultData.data=(ArrayList) subLocations;
+            resultData.total=subLocations.size();
+            resultData.success="success";
+        }
+        catch(Exception e){
+            resultData.error= e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>( resultData, HttpStatus.OK);
     }
 }
