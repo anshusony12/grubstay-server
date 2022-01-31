@@ -53,6 +53,12 @@ public class PGController {
     @Autowired
     private LandMarkRepository landMarkRepository;
 
+    @Autowired
+    private CityRepository cityRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
+
     @PostMapping(path="/")
     public ResponseEntity addPg(@ModelAttribute("pg") PayingGuest pg,
                                 @RequestParam("pgImages[]") MultipartFile[] pgImages,
@@ -201,11 +207,39 @@ public class PGController {
         return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
 
-    @GetMapping("/pgGallery/{pgId}")
-    public ResponseEntity loadAllPGGallery(@PathVariable("pgId") String pgId) throws Exception{
+    @PostMapping("/pgGallery/{pgName}")
+    public ResponseEntity loadAllPGGallery(@PathVariable("pgName") String pgId, @RequestBody String data) throws Exception{
         ResultData resultData=new ResultData();
+        String cityName=null;
+        String locationName=null;
+        String subLocationName=null;
+        String pgName=null;
         try{
-            List<StayGallery> galleryList = this.stayGalleryRepository.getStayGalleryByPgId(pgId);
+            try{
+                HashMap mapData=new ObjectMapper().readValue(data, HashMap.class);
+                if(mapData!=null){
+                    if(mapData.get("cityName")!=null){
+                        cityName=mapData.get("cityName").toString();
+                    }
+                    if(mapData.get("locationName")!=null){
+                        locationName=mapData.get("locationName").toString();
+                    }
+                    if(mapData.get("subLocationName")!=null){
+                        subLocationName=mapData.get("subLocationName").toString();
+                    }
+                    if(mapData.get("pgName")!=null){
+                        pgName=mapData.get("pgName").toString();
+                    }
+                }
+            }catch(Exception e){
+                resultData.error="Unable to parse data";
+                e.printStackTrace();
+            }
+            PayingGuest pg=this.pgRepository.getPgUsingSubLocationLocationCityAndPGName(subLocationName, locationName, cityName, pgName);
+            List<StayGallery> galleryList=null;
+            if(pg!=null){
+                galleryList = this.stayGalleryRepository.getStayGalleryByPgId(pg.getPgId());
+            }
             List<String> imageList=new ArrayList<>();
             for (StayGallery stay : galleryList) {
                 String imageSrc="";
@@ -245,6 +279,7 @@ public class PGController {
         final String stay_plan;
         final String near_by;
         String locationName=null;
+        String cityName=null;
         String gender=null;
         String stayPlan=null;
         String nearBy=null;
@@ -266,10 +301,20 @@ public class PGController {
                 if(mapData.get("stayPlan")!=null){
                     stayPlan=mapData.get("stayPlan").toString();
                 }
+                if(mapData.get("locationName")!=null){
+                    locationName=mapData.get("locationName").toString();
+                }
+                if(mapData.get("cityName")!=null){
+                    cityName=mapData.get("cityName").toString();
+                }
             }
             catch(Exception e){
                 resultData.error="Unable to Parse Data!";
                 e.printStackTrace();
+            }
+            Location location=this.locationRepository.getLocationByLocationNameAndCityName(locationName,cityName);
+            if(location!=null){
+                locationId=location.getLocationId();
             }
             location_id=locationId;
             user_gender=gender;
@@ -379,11 +424,35 @@ public class PGController {
         return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
 
-    @GetMapping("/{pgId}")
-    public ResponseEntity getPgDetails(@PathVariable("pgId") String pgId){
+    @PostMapping ("/{pgName}")
+    public ResponseEntity getPgDetails(@PathVariable("pgName") String pgId, @RequestBody String data){
             ResultData resultData=new ResultData();
+            String cityName=null;
+            String locationName=null;
+            String subLocationName=null;
+            String pgName=null;
             try{
-                PayingGuest pg=this.pgRepository.findPayingGuestByPgId(pgId);
+                try{
+                    HashMap mapData=new ObjectMapper().readValue(data, HashMap.class);
+                    if(mapData!=null){
+                        if(mapData.get("cityName")!=null){
+                            cityName=mapData.get("cityName").toString();
+                        }
+                        if(mapData.get("locationName")!=null){
+                            locationName=mapData.get("locationName").toString();
+                        }
+                        if(mapData.get("subLocationName")!=null){
+                            subLocationName=mapData.get("subLocationName").toString();
+                        }
+                        if(mapData.get("pgName")!=null){
+                            pgName=mapData.get("pgName").toString();
+                        }
+                    }
+                }catch(Exception e){
+                    resultData.error="Unable to parse data";
+                    e.printStackTrace();
+                }
+                PayingGuest pg=this.pgRepository.getPgUsingSubLocationLocationCityAndPGName(subLocationName, locationName, cityName, pgName);
                 if(pg!=null){
                     ArrayList pgData=new ArrayList();
                     pgData.add(pg);
@@ -399,11 +468,39 @@ public class PGController {
             }
             return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
-    @GetMapping("landmarks/{pgId}")
-    public ResponseEntity getLandmarkDetails(@PathVariable("pgId") String pgId){
+    @PostMapping("landmarks/{pgName}")
+    public ResponseEntity getLandmarkDetails(@PathVariable("pgName") String pgId, @RequestBody String data){
         ResultData resultData=new ResultData();
+        String cityName=null;
+        String locationName=null;
+        String subLocationName=null;
+        String pgName=null;
         try{
-            List<LandMarks> landMarkData=this.landMarkRepository.findLandMarksByPgStayId(pgId);
+            try{
+                HashMap mapData=new ObjectMapper().readValue(data, HashMap.class);
+                if(mapData!=null){
+                    if(mapData.get("cityName")!=null){
+                        cityName=mapData.get("cityName").toString();
+                    }
+                    if(mapData.get("locationName")!=null){
+                        locationName=mapData.get("locationName").toString();
+                    }
+                    if(mapData.get("subLocationName")!=null){
+                        subLocationName=mapData.get("subLocationName").toString();
+                    }
+                    if(mapData.get("pgName")!=null){
+                        pgName=mapData.get("pgName").toString();
+                    }
+                }
+            }catch(Exception e){
+                resultData.error="Unable to parse data";
+                e.printStackTrace();
+            }
+            PayingGuest pg=this.pgRepository.getPgUsingSubLocationLocationCityAndPGName(subLocationName, locationName, cityName, pgName);
+            List<LandMarks> landMarkData=null;
+            if(pg!=null){
+                landMarkData = this.landMarkRepository.findLandMarksByPgStayId(pg.getPgId());
+            }
             int count=0;
             if(landMarkData.size() > 0){
                 for(LandMarks landMark : landMarkData){
@@ -453,57 +550,63 @@ public class PGController {
         return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
 
-    @GetMapping("loadAllPG/{cityId}")
-    public ResponseEntity loadAllPGUsingCityId(@PathVariable("cityId") Integer cityId){
+    @GetMapping("loadAllPG/{cityName}")
+    public ResponseEntity loadAllPGUsingCityId(@PathVariable("cityName") String cityName){
         ResultData resultData=new ResultData();
         try{
-            List<PayingGuest> payingGuestsList=this.pgRepository.loadAllPGUsingCityId(cityId);
-            if(payingGuestsList.size() > 0){
-                int count=0;
-                for(PayingGuest payingGuest: payingGuestsList){
-                    String pgId=payingGuest.getPgId();
-                    if(pgId!=null){
-                        StayGallery galleryImage=this.pgRepository.findFirstByStayId(pgId);
-                        if(galleryImage!=null){
-                            File file=new File(this.storageService.getPgRootPath(), galleryImage.getGalName());
-                            if(file.exists()){
-                                String imageSrc= this.storageService.getImageSrc(file);
-                                if(imageSrc!=null){
-                                    count++;
-                                    payingGuest.setPgImage(imageSrc);
-                                    payingGuest.setPgImageName(galleryImage.getGalName());
+            City city=this.cityRepository.findCityByCityName(cityName.toUpperCase());
+            if(city!=null) {
+                Integer cityId=city.getCityId();
+                List<PayingGuest> payingGuestsList = this.pgRepository.loadAllPGUsingCityId(cityId);
+                if (payingGuestsList.size() > 0) {
+                    int count = 0;
+                    for (PayingGuest payingGuest : payingGuestsList) {
+                        String pgId = payingGuest.getPgId();
+                        if (pgId != null) {
+                            StayGallery galleryImage = this.pgRepository.findFirstByStayId(pgId);
+                            if (galleryImage != null) {
+                                File file = new File(this.storageService.getPgRootPath(), galleryImage.getGalName());
+                                if (file.exists()) {
+                                    String imageSrc = this.storageService.getImageSrc(file);
+                                    if (imageSrc != null) {
+                                        count++;
+                                        payingGuest.setPgImage(imageSrc);
+                                        payingGuest.setPgImageName(galleryImage.getGalName());
+                                    }
+                                } else {
+                                    File defaultImage = new File(this.storageService.getWorkingPath() + "static/image", "defaultImage.jpeg");
+                                    if (defaultImage.exists()) {
+                                        String imageSrc = this.storageService.getImageSrc(defaultImage);
+                                        if (imageSrc != null) {
+                                            count++;
+                                            payingGuest.setPgImage(imageSrc);
+                                            payingGuest.setPgImageName("defaultImage.jpeg");
+                                        }
+                                    }
                                 }
-                            }
-                            else{
-                                File defaultImage=new File(this.storageService.getWorkingPath()+"static/image", "defaultImage.jpeg");
-                                if(defaultImage.exists()){
-                                   String imageSrc= this.storageService.getImageSrc(defaultImage);
-                                   if(imageSrc!=null){
-                                       count++;
-                                       payingGuest.setPgImage(imageSrc);
-                                       payingGuest.setPgImageName("defaultImage.jpeg");
-                                   }
-                                }
-                            }
-                        }else{
-                            File defaultImage=new File(this.storageService.getWorkingPath()+"static/image", "defaultImage.jpeg");
-                            if(defaultImage.exists()){
-                                String imageSrc= this.storageService.getImageSrc(defaultImage);
-                                if(imageSrc!=null){
-                                    count++;
-                                    payingGuest.setPgImage(imageSrc);
-                                    payingGuest.setPgImageName("defaultImage.jpeg");
+                            } else {
+                                File defaultImage = new File(this.storageService.getWorkingPath() + "static/image", "defaultImage.jpeg");
+                                if (defaultImage.exists()) {
+                                    String imageSrc = this.storageService.getImageSrc(defaultImage);
+                                    if (imageSrc != null) {
+                                        count++;
+                                        payingGuest.setPgImage(imageSrc);
+                                        payingGuest.setPgImageName("defaultImage.jpeg");
+                                    }
                                 }
                             }
                         }
                     }
+                    resultData.total = count;
+                    resultData.success = "success";
+                    resultData.data = (ArrayList) payingGuestsList;
+                } else {
+                    resultData.total = 0;
+                    resultData.success = "Failed";
                 }
-                resultData.total=count;
-                resultData.success="success";
-                resultData.data=(ArrayList) payingGuestsList;
-            }else{
-                resultData.total=0;
-                resultData.success="Failed";
+            }
+            else{
+                throw new HelperException("City not present!");
             }
         }
         catch(Exception e){

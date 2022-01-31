@@ -5,10 +5,12 @@ import com.grubstay.server.entities.Location;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
+@Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
     public Location findLocationByLocationId(Long locationId);
 
@@ -22,4 +24,8 @@ public interface LocationRepository extends JpaRepository<Location, Long> {
 
     @Query(value = "select distinct count(location_id) from location",nativeQuery = true)
     public int getLocationsCount();
+
+    @Query(value = "select * from location " +
+            "inner join city on location.city_city_id=city.city_id where location_name=?1 and city_name=?2", nativeQuery = true)
+    public Location getLocationByLocationNameAndCityName(String locationName, String cityName);
 }

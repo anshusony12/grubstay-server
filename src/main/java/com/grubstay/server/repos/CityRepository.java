@@ -34,4 +34,7 @@ public interface CityRepository extends JpaRepository<City, Integer> {
             "where c.status = 1 and location.status = 1",nativeQuery = true)
     public List<Map<String,String>> citiesWithLocation();
 
+    @Query(value="select * from city where city_name= ?1",nativeQuery = true)
+    public City findCityByCityName(String cityName);
+
 }
