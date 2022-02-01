@@ -52,4 +52,11 @@ public interface PGRepository extends JpaRepository<PayingGuest, String> {
             "inner join city on city.city_id=location.city_city_id " +
             "where sub_location_name=?1 and location_name=?2  and city_name=?3 and pg_name=?4", nativeQuery = true)
     public PayingGuest getPgUsingSubLocationLocationCityAndPGName(String subLocationName, String locationName, String cityName, String pgName);
+
+    @Query(value="select * from paying_guest " +
+            "inner join sub_location on sub_location.sub_location_id = paying_guest.sub_location_sub_location_id " +
+            "inner join location on location.location_id = sub_location.location_location_id " +
+            "inner join city on city.city_id=location.city_city_id " +
+            "where sub_location_name=?1 and location_name=?2  and city_name=?3", nativeQuery = true)
+    public List<PayingGuest> getPgUsingSubLocationLocationAndCity(String subLocationName, String locationName, String cityName);
 }

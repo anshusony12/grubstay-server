@@ -615,4 +615,65 @@ public class PGController {
         }
         return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
+
+    @GetMapping("getPgUsingSubLocationLocationAndCity/{cityName}/{locationName}/{subLocationName}")
+    public ResponseEntity getPgUsingSubLocationLocationAndCity(@PathVariable("cityName") String cityName,
+                                                               @PathVariable("locationName") String locationName,@PathVariable("subLocationName") String subLocationName){
+        ResultData resultData=new ResultData();
+        try{
+            List<PayingGuest> pgs = this.pgRepository.getPgUsingSubLocationLocationAndCity(subLocationName, locationName, cityName);
+            int count=0;
+            if(pgs.size() > 0){
+                for (PayingGuest payingGuest : pgs) {
+                    String pgId = payingGuest.getPgId();
+                    if (pgId != null) {
+                        StayGallery galleryImage = this.pgRepository.findFirstByStayId(pgId);
+                        if (galleryImage != null) {
+                            File file = new File(this.storageService.getPgRootPath(), galleryImage.getGalName());
+                            if (file.exists()) {
+                                String imageSrc = this.storageService.getImageSrc(file);
+                                if (imageSrc != null) {
+                                    count++;
+                                    payingGuest.setPgImage(imageSrc);
+                                    payingGuest.setPgImageName(galleryImage.getGalName());
+                                }
+                            } else {
+                                File defaultImage = new File(this.storageService.getWorkingPath() + "static/image", "defaultImage.jpeg");
+                                if (defaultImage.exists()) {
+                                    String imageSrc = this.storageService.getImageSrc(defaultImage);
+                                    if (imageSrc != null) {
+                                        count++;
+                                        payingGuest.setPgImage(imageSrc);
+                                        payingGuest.setPgImageName("defaultImage.jpeg");
+                                    }
+                                }
+                            }
+                        } else {
+                            File defaultImage = new File(this.storageService.getWorkingPath() + "static/image", "defaultImage.jpeg");
+                            if (defaultImage.exists()) {
+                                String imageSrc = this.storageService.getImageSrc(defaultImage);
+                                if (imageSrc != null) {
+                                    count++;
+                                    payingGuest.setPgImage(imageSrc);
+                                    payingGuest.setPgImageName("defaultImage.jpeg");
+                                }
+                            }
+                        }
+                    }
+                }
+                resultData.total = count;
+                resultData.success = "success";
+                resultData.data = (ArrayList) pgs;
+            }
+            else{
+                resultData.total=0;
+                resultData.success="Not Found";
+            }
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
 }
