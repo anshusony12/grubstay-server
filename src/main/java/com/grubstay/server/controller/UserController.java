@@ -1,10 +1,8 @@
 package com.grubstay.server.controller;
 
-import com.grubstay.server.entities.City;
-import com.grubstay.server.entities.Role;
-import com.grubstay.server.entities.User;
-import com.grubstay.server.entities.UserRoles;
+import com.grubstay.server.entities.*;
 import com.grubstay.server.helper.ResultData;
+import com.grubstay.server.repos.StayFormRepository;
 import com.grubstay.server.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +25,9 @@ public class UserController {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private StayFormRepository stayFormRepository;
 
     //creating user
     @PostMapping("/")
@@ -42,6 +44,23 @@ public class UserController {
             userRoles.setRole(role1);
             roles.add(userRoles);
             User user1 = this.userService.createUser(user, roles);
+            resultData.success = "saved";
+        }
+        catch(Exception e){
+            resultData.error=e.toString();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    // save stay-form data
+    @PostMapping("/stay-form")
+    public ResponseEntity saveStayFormData(@RequestBody StayForm stayForm) throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+            Date date = new Date();
+            stayForm.setEntryTime(date);
+            this.stayFormRepository.save(stayForm);
             resultData.success = "saved";
         }
         catch(Exception e){
