@@ -676,4 +676,38 @@ public class PGController {
         }
         return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
+
+    @GetMapping("/pgGallery/{pgId}")
+    public ResponseEntity loadAllPGGallery(@PathVariable("pgId") String pgId) throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+            List<StayGallery> galleryList = this.stayGalleryRepository.getStayGalleryByPgId(pgId);
+            List<String> imageList=new ArrayList<>();
+            for (StayGallery stay : galleryList) {
+                String imageSrc="";
+                String pgRootPath = this.storageService.getPgRootPath();
+                File file = new File(pgRootPath, stay.getGalName());
+                //File defaultPg = new File(pgRootPath, "defaultcity.jpeg");
+                if(file.exists()){
+                    imageSrc = this.storageService.getImageSrc(file);
+                    imageList.add(imageSrc);
+                }else {
+                    File defaultImage = new File(this.storageService.getWorkingPath() + "static/image/", "defaultImage.jpeg");
+                    if (defaultImage.exists()) {
+                        imageSrc = this.storageService.getImageSrc(defaultImage);
+                        if (imageSrc != null) {
+                            imageList.add(imageSrc);
+                        }
+                    }
+                }
+            }
+            resultData.data=(ArrayList)imageList;
+            resultData.total=imageList.size();
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
 }

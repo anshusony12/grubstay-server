@@ -141,6 +141,21 @@ public class AdminHomeController {
         return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
 
+    @DeleteMapping("/deleteRequest/{reqId}")
+    public ResponseEntity updateRequest(@PathVariable("reqId") Long reqId) throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+            //System.out.println(request);
+            this.callbackRepository.deleteById(reqId);
+            resultData.success = "deleted";
+        }
+        catch(Exception e){
+            resultData.error=e.toString();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
     @GetMapping("/all")
     public ResponseEntity getAllAdminData() {
         ResultData resultData=new ResultData();
