@@ -53,6 +53,9 @@ public class AdminHomeController {
     @Autowired
     private CallbackRepository callbackRepository;
 
+    @Autowired
+    private StayFormRepository stayFormRepository;
+
     @GetMapping("/")
     public ResponseEntity loadAllCounts() throws Exception{
         ResultData resultData=new ResultData();
@@ -247,6 +250,37 @@ public class AdminHomeController {
         }
         catch(Exception e){
             resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    // get all stay-form enquiries data
+    @GetMapping("/stay-form")
+    public ResponseEntity getAllStayFormEnquiries() {
+        ResultData resultData=new ResultData();
+        try{
+            List<StayForm> all = this.stayFormRepository.findAll();
+            resultData.data = (ArrayList) all;
+            resultData.success="fetched";
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteEnquiry/{enquiryId}")
+    public ResponseEntity deleteEnquiry(@PathVariable("enquiryId") Long enquiryId) throws Exception{
+        ResultData resultData=new ResultData();
+        try{
+            //System.out.println(request);
+            this.stayFormRepository.deleteById(enquiryId);
+            resultData.success = "deleted";
+        }
+        catch(Exception e){
+            resultData.error=e.toString();
             e.printStackTrace();
         }
         return new ResponseEntity<>(resultData, HttpStatus.OK);

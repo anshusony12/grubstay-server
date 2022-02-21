@@ -10,10 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -58,7 +57,9 @@ public class UserController {
     public ResponseEntity saveStayFormData(@RequestBody StayForm stayForm) throws Exception{
         ResultData resultData=new ResultData();
         try{
-            Date date = new Date();
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            String date = now.format(format);
             stayForm.setEntryTime(date);
             this.stayFormRepository.save(stayForm);
             resultData.success = "saved";

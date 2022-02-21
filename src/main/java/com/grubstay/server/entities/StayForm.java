@@ -20,7 +20,7 @@ public class StayForm {
     private String whatsapp;
     private String college;
     private String area;
-    private Date shiftDate;
+    private String shiftDate;
     private String refrel;
-    private Date entryTime;
+    private String entryTime;
 }
