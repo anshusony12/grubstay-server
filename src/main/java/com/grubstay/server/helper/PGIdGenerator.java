@@ -19,7 +19,8 @@ public class PGIdGenerator implements IdentifierGenerator {
 
         try{
             Statement stmt=connection.createStatement();
-            String sqlStmt="select count(pg_id) from paying_guest";
+            //String sqlStmt="select count(pg_id) from paying_guest";
+            String sqlStmt = "select MAX(CAST(SUBSTR(TRIM(pg_id),3) AS UNSIGNED)) as last_pg_id from paying_guest";
             ResultSet resultSet = stmt.executeQuery(sqlStmt);
             if(resultSet.next()){
                 int id=resultSet.getInt(1)+1;
