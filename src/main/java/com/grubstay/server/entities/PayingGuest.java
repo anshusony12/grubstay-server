@@ -30,6 +30,7 @@ public class PayingGuest {
     private int singleMemPgPrc;
     private int doubleMemPgPrc;
     private int tripleMemPgPrc;
+    private int fourMemPgPrc;
 
     private boolean status;
 
