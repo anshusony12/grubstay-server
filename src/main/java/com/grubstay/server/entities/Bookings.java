@@ -20,11 +20,29 @@ public class Bookings {
     private String fullname;
     private long phoneNo;
     private String email;
-    private Date bookingDate;
-    private Date reserveDate;
+    private String bookingDate;
+    private String reserveDate;
     private String sharingType;
     private String pgName;
     private String pgID;
+    private String bookingStatus;
+    private String bookingStatusReference;
+
+    public String getBookingStatusReference() {
+        return bookingStatusReference;
+    }
+
+    public void setBookingStatusReference(String bookingStatusReference) {
+        this.bookingStatusReference = bookingStatusReference;
+    }
+
+    public String getBookingStatus() {
+        return bookingStatus;
+    }
+
+    public void setBookingStatus(String bookingStatus) {
+        this.bookingStatus = bookingStatus;
+    }
 
     public int getBookingID() {
         return bookingID;
@@ -106,19 +124,19 @@ public class Bookings {
         this.email = email;
     }
 
-    public Date getBookingDate() {
+    public String getBookingDate() {
         return bookingDate;
     }
 
-    public void setBookingDate(Date bookingDate) {
+    public void setBookingDate(String bookingDate) {
         this.bookingDate = bookingDate;
     }
 
-    public Date getReserveDate() {
+    public String getReserveDate() {
         return reserveDate;
     }
 
-    public void setReserveDate(Date reserveDate) {
+    public void setReserveDate(String reserveDate) {
         this.reserveDate = reserveDate;
     }
 
@@ -146,7 +164,10 @@ public class Bookings {
         this.pgID = pgID;
     }
 
-    public Bookings(int bookingID, int amount, String paymentID, String orderID, String recipt, String status, String username, String fullname, long phoneNo, String email, Date bookingDate, Date reserveDate, String sharingType, String pgName, String pgID) {
+    public Bookings() {
+    }
+
+    public Bookings(int bookingID, int amount, String paymentID, String orderID, String recipt, String status, String username, String fullname, long phoneNo, String email, String bookingDate, String reserveDate, String sharingType, String pgName, String pgID, String bookingStatus, String bookingStatusReference) {
         this.bookingID = bookingID;
         this.amount = amount;
         this.paymentID = paymentID;
@@ -162,5 +183,7 @@ public class Bookings {
         this.sharingType = sharingType;
         this.pgName = pgName;
         this.pgID = pgID;
+        this.bookingStatus = bookingStatus;
+        this.bookingStatusReference=bookingStatusReference;
     }
 }
