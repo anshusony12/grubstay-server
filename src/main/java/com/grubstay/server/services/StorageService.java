@@ -1,6 +1,7 @@
 package com.grubstay.server.services;
 
 import org.aspectj.util.FileUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -25,15 +26,19 @@ import java.util.List;
 @Service
 public class StorageService {
 
-    private final String deploymentPath="target/classes/";
-    private final String localWorkingPath="src/main/resources/";
-    private final String rootLocation= Paths.get(deploymentPath+"static/image/").toString();
+    /*private final String deploymentPath="target/classes/";
+    private final String localWorkingPath="src/main/resources/";*/
+
+    @Value("${storage.path}")
+    private String storagePath;
+
+    private final String rootLocation= Paths.get(storagePath+"static/image/").toString();
     private final String cityPath="/city";
     private final String pgPath="/pg";
     private final String landMarkPath="/landmark";
 
     public String getWorkingPath(){
-        return deploymentPath;
+        return storagePath;
     }
 
     public void storeCity(MultipartFile file) throws Exception{
