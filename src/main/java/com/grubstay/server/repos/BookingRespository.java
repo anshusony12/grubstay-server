@@ -7,8 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BookingRespository extends JpaRepository<Bookings, Long> {
+public interface BookingRespository extends JpaRepository<Bookings, Integer> {
     Bookings findByOrderID(String orderID);
 
     List<Bookings> findByUsernameAndStatus(String username, String status);
+
+    Bookings findBookingByBookingID(Integer bookingID);
 }

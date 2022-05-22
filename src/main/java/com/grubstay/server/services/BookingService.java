@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface BookingService {
     public List<Bookings> getAllBookings() throws HelperException;
+    public Bookings updateBooking(Bookings booking) throws HelperException;
 }

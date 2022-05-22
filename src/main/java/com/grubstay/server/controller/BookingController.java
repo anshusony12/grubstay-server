@@ -159,4 +159,22 @@ public class BookingController {
         }
         return new ResponseEntity<>(resultData, HttpStatus.OK);
     }
+
+    @PostMapping("/updateBooking")
+    public ResponseEntity updateBooking(@RequestBody Bookings booking){
+        ResultData resultData = new ResultData();
+        try{
+            Bookings updatedBookingObj=this.bookingService.updateBooking(booking);
+            if(updatedBookingObj!=null){
+                resultData.success="BOOKING_UPDATED";
+            }else{
+                resultData.error="BOOKING_NOT_EXIST";
+            }
+        }
+        catch(Exception e){
+            resultData.error=e.getMessage();
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(resultData, HttpStatus.OK);
+    }
 }

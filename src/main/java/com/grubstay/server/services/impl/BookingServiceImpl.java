@@ -19,4 +19,17 @@ public class BookingServiceImpl implements BookingService {
     public List<Bookings> getAllBookings() throws HelperException {
         return bookingRespository.findAll();
     }
+
+    @Override
+    public Bookings updateBooking(Bookings booking) throws HelperException{
+        Bookings bookingObj=this.bookingRespository.findBookingByBookingID(booking.getBookingID());
+        if(bookingObj==null){
+            throw new HelperException("Booking doesn't exist");
+        }else{
+            bookingObj.setStatus(booking.getStatus());
+            bookingObj.setBookingStatusReference(booking.getBookingStatusReference());
+            bookingObj=this.bookingRespository.save(bookingObj);
+        }
+        return bookingObj;
+    }
 }
